@@ -15,8 +15,20 @@ The plugin has no dependencies. It is installed automatically when you install `
 | Component | Type | Invocation | Purpose |
 | :- | :- | :- | :- |
 | `researcher` | agent | `@agent-research-tools:researcher` or `subagent_type: "research-tools:researcher"` | Finds and verifies facts in the repository or external sources; returns a structured report with cited evidence and a "Not found / unverified" list. Never edits files. |
+| `research` | skill | `/research-tools:research <question> [save]` | Quick entry point: turns your request into up to 4 concrete questions, launches one `researcher` per question in parallel and returns the reports unchanged. With `save`, also writes them to `docs/research/`. |
 
-## How to use
+## Quick start: `/research-tools:research`
+
+The easiest way to use the agent. Type a question or a few at once:
+
+```text
+/research-tools:research how is a session token refreshed, and does our HTTP client retry on 401?
+/research-tools:research does zod 4 still support .strict() on objects? save
+```
+
+The skill shows the questions it will research (`Q1 [R] …`, `Q2 [E] …`), launches the researchers in parallel, and returns their reports as written. If your input is only a topic, it asks up to 3 short questions first.
+
+## How to use the agent directly
 
 Mention the agent in a prompt, or let the main session launch it with the Agent tool and `subagent_type: "research-tools:researcher"`. Give it one concrete question; if you give it only a topic, it asks up to 4 clarifying questions and researches nothing until you answer.
 
