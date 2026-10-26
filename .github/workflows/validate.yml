@@ -1,0 +1,47 @@
+name: Validate marketplace
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The version bump check needs the merge base with the PR's target branch.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Structural lint (team rules)
+        run: node scripts/validate-marketplace.mjs
+
+      - name: Version bump check
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: node scripts/check-version-bump.mjs "origin/$BASE_REF"
+
+      - name: Release script tests
+        run: node --test "scripts/test/*.test.mjs"
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: claude plugin validate
+        run: |
+          # An empty catalog always warns "Marketplace has no plugins defined",
+          # which --strict turns into a failure. Use --strict once plugins exist.
+          if [ "$(node -p "require('./.claude-plugin/marketplace.json').plugins.length")" = "0" ]; then
+            claude plugin validate .
+          else
+            claude plugin validate . --strict
+          fi

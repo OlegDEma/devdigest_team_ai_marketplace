@@ -1,0 +1,8 @@
+{
+  "name": "dev-digest-ai-marketplace",
+  "description": "Internal AI Harness marketplace for the DevDigest team: skills, agents, commands and hooks for Claude Code",
+  "owner": {
+    "name": "Oleh Demskyi"
+  },
+  "plugins": []
+}

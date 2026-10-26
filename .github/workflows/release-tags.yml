@@ -1,0 +1,39 @@
+name: Tag releases
+
+# After a release PR is merged, tag every plugin whose plugin.json version has
+# no `<plugin>--v<version>` tag yet. Tags drive `dependencies` version ranges.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/**"
+      - ".claude-plugin/marketplace.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-tags
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Structural lint (team rules)
+        run: node scripts/validate-marketplace.mjs
+
+      - name: Create and push missing release tags
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node scripts/tag-releases.mjs --push
