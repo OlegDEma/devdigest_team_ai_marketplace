@@ -1,0 +1,21 @@
+# Default owners: review of any change
+*                               @OlegDEma
+
+# Marketplace catalog: registration, renames, versions
+/.claude-plugin/                @OlegDEma
+
+# Code that runs on users' machines — requires security review
+/plugins/**/hooks/              @OlegDEma
+/plugins/**/scripts/            @OlegDEma
+/plugins/**/.mcp.json           @OlegDEma
+
+# Per-plugin owners: add a line together with the plugin registration
+# /plugins/sdd-engineering/     @OlegDEma @<teammate>
+
+# CI and linter
+/.github/                       @OlegDEma
+/scripts/                       @OlegDEma
+
+# Policies
+/docs/                          @OlegDEma
+/CODEOWNERS                     @OlegDEma

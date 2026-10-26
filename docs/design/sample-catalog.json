@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-26T09:14:00Z",
+  "marketplace": {
+    "name": "dev-digest-ai-marketplace",
+    "description": "Internal AI Harness marketplace for the DevDigest team: skills, agents, commands and hooks for Claude Code",
+    "repo": "OlegDEma/devdigest_team_ai_marketplace"
+  },
+  "plugins": [
+    {
+      "name": "code-review",
+      "displayName": "Code Review",
+      "version": "2.0.0",
+      "description": "Pull request review against team standards: security, tests, readability",
+      "author": "Oleh Demskyi",
+      "license": "UNLICENSED",
+      "category": "engineering",
+      "tags": ["review", "pr", "quality"],
+      "keywords": ["code-review", "pull-request"],
+      "dependencies": [{ "name": "core-conventions", "version": "^1.0.0" }],
+      "external": false,
+      "path": "plugins/code-review",
+      "lastReleasedAt": "2026-10-24",
+      "hasReadme": true,
+      "components": {
+        "hooks": [],
+        "mcpServers": [],
+        "scripts": []
+      },
+      "changelog": [
+        {
+          "version": "2.0.0",
+          "date": "2026-10-24",
+          "bump": "major",
+          "sections": {
+            "Changed": ["Skill `review-pr` renamed to `pr-review`; the old invocation no longer works"],
+            "Added": ["Agent `security-reviewer` for a separate check of secrets and unsafe dependencies"]
+          }
+        },
+        {
+          "version": "1.3.1",
+          "date": "2026-10-10",
+          "bump": "patch",
+          "sections": { "Fixed": ["Review no longer comments on generated files in `dist/`"] }
+        },
+        {
+          "version": "1.3.0",
+          "date": "2026-09-29",
+          "bump": "minor",
+          "sections": { "Added": ["Command `/code-review:summary`: a short PR summary for the description"] }
+        }
+      ]
+    },
+    {
+      "name": "core-conventions",
+      "displayName": "Core Conventions",
+      "version": "1.2.0",
+      "description": "Shared team conventions: commit style, branch names, repository structure",
+      "author": "DevDigest Team",
+      "license": "UNLICENSED",
+      "category": "core",
+      "tags": ["conventions", "git"],
+      "keywords": ["commits", "branches"],
+      "dependencies": [],
+      "external": false,
+      "path": "plugins/core-conventions",
+      "lastReleasedAt": "2026-09-15",
+      "hasReadme": true,
+      "components": {
+        "hooks": [{ "event": "PreToolUse", "matcher": "Bash", "script": "check-commit-message.sh" }],
+        "mcpServers": [],
+        "scripts": ["check-commit-message.sh"]
+      },
+      "changelog": [
+        {
+          "version": "1.2.0",
+          "date": "2026-09-15",
+          "bump": "minor",
+          "sections": { "Added": ["Hook checks the commit message format before `git commit`"] }
+        }
+      ]
+    },
+    {
+      "name": "jira-workflow",
+      "displayName": "Jira Workflow",
+      "version": "1.0.0",
+      "description": "Work with Jira tickets from Claude Code: create them, update statuses, link them to branches",
+      "author": "DevDigest Team",
+      "license": "UNLICENSED",
+      "category": "productivity",
+      "tags": ["jira", "tasks", "mcp"],
+      "keywords": ["jira", "tickets"],
+      "dependencies": ["core-conventions"],
+      "external": false,
+      "path": "plugins/jira-workflow",
+      "lastReleasedAt": "2026-10-21",
+      "hasReadme": true,
+      "components": {
+        "hooks": [{ "event": "SessionStart", "matcher": "", "script": "load-current-ticket.sh" }],
+        "mcpServers": [{ "name": "jira", "transport": "http" }],
+        "scripts": ["load-current-ticket.sh"]
+      },
+      "changelog": [
+        {
+          "version": "1.0.0",
+          "date": "2026-10-21",
+          "bump": "new",
+          "sections": { "Added": ["First release: skill `ticket-from-branch`, command `/jira-workflow:status`, Jira MCP server"] }
+        }
+      ]
+    },
+    {
+      "name": "sdd-engineering",
+      "displayName": "SDD Engineering",
+      "version": "1.1.0",
+      "description": "Spec-driven development: from spec to code and review",
+      "author": "DevDigest Team",
+      "license": "UNLICENSED",
+      "category": "engineering",
+      "tags": ["sdd", "specs"],
+      "keywords": ["sdd", "engineering"],
+      "dependencies": [{ "name": "code-review", "version": "^2.0.0" }, "core-conventions"],
+      "external": false,
+      "path": "plugins/sdd-engineering",
+      "lastReleasedAt": "2026-10-20",
+      "hasReadme": true,
+      "components": {
+        "hooks": [],
+        "mcpServers": [],
+        "scripts": []
+      },
+      "changelog": [
+        {
+          "version": "1.1.0",
+          "date": "2026-10-20",
+          "bump": "minor",
+          "sections": {
+            "Added": ["Agent `spec-critic` finds contradictions and gaps in a spec"],
+            "Fixed": ["Skill `write-spec` no longer duplicates the \"Open questions\" section"]
+          }
+        },
+        {
+          "version": "1.0.0",
+          "date": "2026-08-30",
+          "bump": "new",
+          "sections": { "Added": ["First release"] }
+        }
+      ]
+    },
+    {
+      "name": "testing-toolkit",
+      "displayName": "Testing Toolkit",
+      "version": "0.4.2",
+      "description": "Generates unit and e2e tests, finds uncovered branches, analyzes CI failures",
+      "author": "DevDigest Team",
+      "license": "UNLICENSED",
+      "category": "engineering",
+      "tags": ["testing", "ci"],
+      "keywords": [],
+      "dependencies": [],
+      "external": false,
+      "path": "plugins/testing-toolkit",
+      "lastReleasedAt": "2026-03-02",
+      "hasReadme": false,
+      "components": {
+        "hooks": [],
+        "mcpServers": [],
+        "scripts": []
+      },
+      "changelog": []
+    },
+    {
+      "name": "onboarding-helper",
+      "displayName": "Onboarding Helper",
+      "version": "1.0.3",
+      "description": "Helps new team members find their way around repositories and processes",
+      "author": "Platform Team",
+      "license": "UNLICENSED",
+      "category": "productivity",
+      "tags": ["onboarding", "docs"],
+      "keywords": [],
+      "dependencies": [],
+      "external": true,
+      "path": null,
+      "lastReleasedAt": "2026-10-01",
+      "hasReadme": true,
+      "components": null,
+      "changelog": []
+    }
+  ],
+  "artifacts": [
+    { "id": "code-review/skill/pr-review", "type": "skill", "name": "pr-review", "description": "Full PR review against the team checklist: security, tests, readability, naming", "plugin": "code-review", "path": "plugins/code-review/skills/pr-review/SKILL.md" },
+    { "id": "code-review/agent/security-reviewer", "type": "agent", "name": "security-reviewer", "description": "Dedicated agent that looks for secrets, unsafe dependencies and injections in the diff", "plugin": "code-review", "path": "plugins/code-review/agents/security-reviewer.md" },
+    { "id": "code-review/command/summary", "type": "command", "name": "summary", "description": "Short summary of PR changes for the description", "plugin": "code-review", "path": "plugins/code-review/commands/summary.md" },
+    { "id": "core-conventions/skill/commit-message", "type": "skill", "name": "commit-message", "description": "Writes a commit message following the team convention", "plugin": "core-conventions", "path": "plugins/core-conventions/skills/commit-message/SKILL.md" },
+    { "id": "core-conventions/skill/branch-name", "type": "skill", "name": "branch-name", "description": "Suggests a branch name from the ticket number and description", "plugin": "core-conventions", "path": "plugins/core-conventions/skills/branch-name/SKILL.md" },
+    { "id": "core-conventions/hook/PreToolUse", "type": "hook", "name": "PreToolUse · Bash", "description": "Checks the commit message format before git commit", "plugin": "core-conventions", "path": "plugins/core-conventions/hooks/hooks.json" },
+    { "id": "jira-workflow/skill/ticket-from-branch", "type": "skill", "name": "ticket-from-branch", "description": "Finds the Jira ticket by the current branch name and pulls its description into context", "plugin": "jira-workflow", "path": "plugins/jira-workflow/skills/ticket-from-branch/SKILL.md" },
+    { "id": "jira-workflow/command/status", "type": "command", "name": "status", "description": "Changes the status of the current Jira ticket", "plugin": "jira-workflow", "path": "plugins/jira-workflow/commands/status.md" },
+    { "id": "jira-workflow/mcp/jira", "type": "mcp", "name": "jira", "description": "Jira MCP server (http)", "plugin": "jira-workflow", "path": "plugins/jira-workflow/.mcp.json" },
+    { "id": "sdd-engineering/skill/write-spec", "type": "skill", "name": "write-spec", "description": "Writes a feature spec from the team template: goal, features, acceptance criteria, open questions", "plugin": "sdd-engineering", "path": "plugins/sdd-engineering/skills/write-spec/SKILL.md" },
+    { "id": "sdd-engineering/skill/spec-to-tasks", "type": "skill", "name": "spec-to-tasks", "description": "Breaks a spec into tasks with estimates and dependencies", "plugin": "sdd-engineering", "path": "plugins/sdd-engineering/skills/spec-to-tasks/SKILL.md" },
+    { "id": "sdd-engineering/agent/spec-critic", "type": "agent", "name": "spec-critic", "description": "Finds contradictions, gaps and untestable criteria in a spec", "plugin": "sdd-engineering", "path": "plugins/sdd-engineering/agents/spec-critic.md" },
+    { "id": "testing-toolkit/skill/write-tests", "type": "skill", "name": "write-tests", "description": "Generates unit tests for changed code in the style of existing tests", "plugin": "testing-toolkit", "path": "plugins/testing-toolkit/skills/write-tests/SKILL.md" },
+    { "id": "testing-toolkit/skill/ci-failure", "type": "skill", "name": "ci-failure", "description": "", "plugin": "testing-toolkit", "path": "plugins/testing-toolkit/skills/ci-failure/SKILL.md" },
+    { "id": "testing-toolkit/agent/coverage-hunter", "type": "agent", "name": "coverage-hunter", "description": "Finds code branches not covered by tests and suggests test cases", "plugin": "testing-toolkit", "path": "plugins/testing-toolkit/agents/coverage-hunter.md" }
+  ],
+  "stats": {
+    "plugins": 6,
+    "skills": 8,
+    "agents": 3,
+    "commands": 2,
+    "pluginsWithHooks": 2,
+    "mcpServers": 1,
+    "health": {
+      "withReadmePct": 83,
+      "withChangelogPct": 67,
+      "withTagsPct": 100,
+      "issues": [
+        { "plugin": "testing-toolkit", "kind": "no-changelog", "message": "No CHANGELOG.md" },
+        { "plugin": "testing-toolkit", "kind": "no-readme", "message": "No README.md" },
+        { "plugin": "testing-toolkit", "kind": "stale", "message": "No release for 238 days" },
+        { "plugin": "testing-toolkit", "kind": "empty-description", "message": "Skill `ci-failure` has no description" }
+      ]
+    }
+  }
+}
