@@ -20,6 +20,13 @@
       "tags": ["skills", "react", "nextjs", "fastify", "architecture", "security", "testing"]
     },
     {
+      "name": "pr-gate",
+      "source": "./plugins/pr-gate",
+      "description": "Local pre-PR merge gate: project checks, routed reviews, verified CRITICALs and a freshness stamp; report-only by default",
+      "category": "engineering",
+      "tags": ["review", "pr", "gate", "quality", "workflow"]
+    },
+    {
       "name": "research-tools",
       "source": "./plugins/research-tools",
       "description": "Read-only researcher agent for repository and external research with cited evidence",
