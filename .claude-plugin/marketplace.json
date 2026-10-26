@@ -13,18 +13,25 @@
       "tags": ["architecture", "review", "agent"]
     },
     {
+      "name": "engineering-insights",
+      "source": "./plugins/engineering-insights",
+      "description": "Record and recall non-obvious learnings in INSIGHTS.md, with a read-only curator agent that audits them",
+      "category": "engineering",
+      "tags": ["insights", "knowledge", "agent", "skill"]
+    },
+    {
       "name": "engineering-paved-path",
       "source": "./plugins/engineering-paved-path",
-      "description": "Shared engineering skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Mermaid",
+      "description": "Shared engineering skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Drizzle ORM, PostgreSQL, Mermaid",
       "category": "engineering",
-      "tags": ["skills", "react", "nextjs", "fastify", "architecture", "security", "testing"]
+      "tags": ["skills", "react", "nextjs", "fastify", "architecture", "security", "testing", "drizzle", "postgresql"]
     },
     {
       "name": "research-tools",
       "source": "./plugins/research-tools",
-      "description": "Read-only researcher agent for repository and external research with cited evidence",
+      "description": "Read-only research agents: researcher (repo and external), investigator (structural code tracing) and brainstorm (options before a spec)",
       "category": "research",
-      "tags": ["research", "agent"]
+      "tags": ["research", "agent", "investigation", "brainstorm"]
     },
     {
       "name": "sdd-engineering",
@@ -32,6 +39,13 @@
       "description": "Spec-driven development workflow: spec, plan, implement, review, verify and retro with dedicated agents",
       "category": "engineering",
       "tags": ["sdd", "spec", "planning", "workflow", "agents"]
+    },
+    {
+      "name": "security-review",
+      "source": "./plugins/security-review",
+      "description": "Read-only security review of a plan, a working tree or a file list, with quoted evidence and self-verified CRITICALs",
+      "category": "security",
+      "tags": ["security", "review", "agent"]
     },
     {
       "name": "test-and-docs",

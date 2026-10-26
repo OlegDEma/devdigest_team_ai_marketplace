@@ -8,7 +8,7 @@ metadata:
 
 # Research
 
-Run read-only research with the `research-tools:researcher` agent from the main session. This skill shapes the request; the agent does the research and writes the report.
+Run read-only research with the `research-tools:researcher` agent (or `research-tools:investigator` for purely structural questions) from the main session. This skill shapes the request; the agent does the research and writes the report.
 
 Input: `$ARGUMENTS` — a question, a topic, or several questions. The word `save` anywhere in it means "also save the reports to files".
 
@@ -19,16 +19,17 @@ Input: `$ARGUMENTS` — a question, a topic, or several questions. The word `sav
    - **R (repository)** — about this codebase, its history or recorded decisions;
    - **E (external)** — about libraries, APIs, versions, standards, upstream issues;
    - **R+E** — needs both (for example "does our usage of X match the current docs").
+   - **S (structural)** — purely structural: where a symbol is defined, who imports or calls it, every consumer of a field, the blast radius of a stated change. No *why*, history or external behaviour.
 3. Make every question **concrete**: one thing to find out, the scope (paths, library and version, time range) and what the answer is for. If the input is only a topic and you cannot write a concrete question without guessing, ask the user up to 3 short questions first and stop. Do not launch the agent on a bare topic: it will only ask the same questions back.
 
 Show the user the list before launching, one line each: `Q1 [R] <question>`. Do not wait for confirmation unless something in step 3 was unclear.
 
 ## 2. Launch the researchers
 
-Launch one `research-tools:researcher` per question, **all in one message**, so they run in parallel. Always pass `subagent_type: "research-tools:researcher"` with the full namespace. The prompt for each agent:
+Launch one agent per question, **all in one message**, so they run in parallel. Always pass the full namespace: `subagent_type: "research-tools:researcher"` for R, E and R+E questions, and `subagent_type: "research-tools:investigator"` for S questions (for an S question, state the symbol or the exact change, and the scope). The prompt for each agent:
 
 ```text
-Mode: <R | E | R+E>
+Mode: <R | E | R+E | S>
 Question: <the concrete question>
 Scope: <paths, library@version, dates; or "whole repository">
 Why: <what the answer will be used for>
@@ -48,4 +49,5 @@ If the agent replies with **Clarification needed**, relay its questions to the u
 - Read-only: never edit code, configs or docs because of what the research found. Propose changes; the user decides.
 - One concrete question per agent. More than 4 questions → ask the user which 4 matter now.
 - Do not research yourself in the main session; the agent's budget, citations and "Not found" discipline are why this skill exists.
-- If `research-tools:researcher` is not available, say that the `research-tools` plugin is not installed or not enabled, and stop.
+- A question that mixes structure with *why* or history goes to `researcher` (mode R); split it only if the structural part is large.
+- If `research-tools:researcher` (or `research-tools:investigator` for S questions) is not available, say that the `research-tools` plugin is not installed or not enabled, and stop.

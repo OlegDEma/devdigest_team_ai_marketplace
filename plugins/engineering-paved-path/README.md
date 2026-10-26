@@ -3,8 +3,8 @@
 Reusable engineering knowledge packaged as Claude Code skills: a stack-neutral
 layered **architecture** skill (onion / hexagonal rules for backends plus
 frontend layering rules) and best-practice skills for React, Next.js, Fastify,
-React Testing Library, application security, TypeScript, Zod and Mermaid
-diagrams. Install it if you want Claude to design, implement and review code
+React Testing Library, application security, TypeScript, Zod, Drizzle ORM,
+PostgreSQL table design and Mermaid diagrams. Install it if you want Claude to design, implement and review code
 against consistent, well-sourced conventions, or if you build agents and
 plugins that should apply the same rules (the `architecture-review` and
 `sdd-engineering` plugins depend on it). It ships skills only: no agents, no
@@ -31,6 +31,8 @@ No dependencies. It is pulled in automatically when you install
 | `security` | `/engineering-paved-path:security` | OWASP Top 10:2025 guidance with confidence-based reporting, checklists and unsafe/safe code pairs. |
 | `typescript-expert` | `/engineering-paved-path:typescript-expert` | Advanced types, tsconfig, type-check performance, ESM/CJS and migration help, plus a diagnostic script. |
 | `zod` | `/engineering-paved-path:zod` | 43 prioritized Zod rules: schemas, `safeParse`, inference, errors, objects, composition, refinements, performance. |
+| `drizzle-orm-patterns` | `/engineering-paved-path:drizzle-orm-patterns` | Drizzle ORM schema definition, relations, type-safe queries, joins and aggregations, transactions, Drizzle Kit migrations, soft delete, upsert and batch patterns. |
+| `postgresql-table-design` | `/engineering-paved-path:postgresql-table-design` | PostgreSQL schema design: data types, constraints, indexing, JSONB, partitioning, upsert-friendly design, safe schema evolution and gotchas. |
 | `mermaid-diagram` | `/engineering-paved-path:mermaid-diagram` | Choose the right Mermaid diagram type and write it clearly (flowchart, sequence, class, ER, state, Gantt, and more). |
 
 ### When each skill triggers
@@ -58,6 +60,10 @@ can also call it explicitly with the slash command above.
   migration.
 - **zod** — defining schemas, `safeParse`, `z.infer`, validation errors,
   transforms and refinements.
+- **drizzle-orm-patterns** — defining Drizzle schemas and relations, writing
+  queries and transactions, configuring Drizzle Kit migrations.
+- **postgresql-table-design** — designing or reviewing a PostgreSQL schema:
+  types, keys, constraints, indexes, JSONB, partitioning, schema changes.
 - **mermaid-diagram** — visualizing workflows, architectures, API flows, data
   models or state machines in Markdown.
 
@@ -206,6 +212,10 @@ every plan step, and `spec-creator` uses `mermaid-diagram` and `security`.
 - `zod` — community rule set ("Zod", version 1.0.0, January 2026; see
   `skills/zod/AGENTS.md`), based on the official Zod documentation
   (colinhacks/zod).
+- `drizzle-orm-patterns` and `postgresql-table-design` — ported from the
+  DevDigest team's skill set. The source files carry no license or upstream
+  attribution headers, so no third-party credit is recorded here; the content
+  follows the official Drizzle ORM and PostgreSQL documentation.
 - `security` — synthesized from OWASP Top 10:2025 and ASVS 5.0 and from
   community skills including getsentry/skills (security-review),
   agamm/claude-code-owasp and trailofbits/skills; full list in
