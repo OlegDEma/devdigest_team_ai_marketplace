@@ -17,9 +17,10 @@ own conventions.
 | 1. Spec | The WHAT and WHY, with EARS acceptance criteria (`AC-n`), edge cases, contracts and diagrams, after rounds of gap-finding questions | `sdd-engineering:spec-creator`, driven by `/sdd-engineering:spec` | `docs/specs/YYYY-MM-DD-slug.md` |
 | 2. Plan | The HOW: requirements review, then a phased, file-by-file plan where every step maps to an AC and to an `engineering-paved-path` skill | `sdd-engineering:implementation-planner` | `docs/plans/YYYY-MM-DD-slug.md` |
 | 3. Implement | Code and tests per AC, phase by phase, self-verified with the plan's commands | `sdd-engineering:implementer` × N, driven by `/sdd-engineering:run-plan` | code changes + Implementation Report |
-| 4. Review | Read-only architecture verdict on the diff | `architecture-review:architecture-reviewer` | Architecture Verdict |
+| 3b. Plan check (optional, before 3) | Read-only plan-time architecture verdict, plus a security verdict when the plan names untrusted input, auth, external I/O or secrets | `/sdd-engineering:review-plan` → `architecture-review:architecture-reviewer` (+ `security-review:security-reviewer`) | short verdict + findings; the plan is never edited |
+| 4. Review | Read-only architecture and security verdicts on the diff | `architecture-review:architecture-reviewer` ‖ `security-review:security-reviewer` | Architecture Verdict, Security Verdict |
 | 5. Verify | Every AC checked as Met / Not met / Unverifiable with evidence; the plan's commands re-run | `sdd-engineering:plan-verifier` | Plan Verification Report |
-| 6. Fix | Bounded fix cycle (default 3 rounds) on CRITICAL findings and unmet ACs | the same implementers, reviewer and verifier | updated code + reports |
+| 6. Fix | Bounded fix cycle (default 3 rounds) on CRITICAL findings, architecture and security WARNINGs, and unmet ACs | the same implementers, reviewer and verifier | updated code + reports |
 | 7. Retro | Facts (tokens, agents, timeline, errors) plus a judged analysis of the run | `/sdd-engineering:workflow-retro` | `docs/retros/YYYY-MM-DD-slug.md` |
 
 Agents never launch other agents (none has the `Agent` tool). The **main
@@ -32,11 +33,16 @@ graph LR
   spec -.->|research requests| res[research-tools:researcher × N]
   res -.->|reports| spec
   spec -->|owner approves, asks to plan| plan[implementation-planner<br/>docs/plans/*.md]
-  plan -->|owner approves| run[/sdd-engineering:run-plan/]
+  plan -->|optional| rp[/sdd-engineering:review-plan/<br/>read-only plan check]
+  rp -->|defect: back to planner via owner| plan
+  rp -->|owner approves| run[/sdd-engineering:run-plan/]
+  plan -->|owner approves| run
   run --> impl[implementer × N]
   impl --> rev[architecture-review:architecture-reviewer]
+  impl --> sec[security-review:security-reviewer]
   impl --> ver[plan-verifier]
   rev --> fix[bounded fix cycle]
+  sec --> fix
   ver --> fix
   fix --> done[Done: report to owner]
   done -->|/sdd-engineering:workflow-retro| retro[Retrospective: tokens, agents, time]
@@ -48,31 +54,33 @@ graph LR
 claude plugin install sdd-engineering@dev-digest-ai-marketplace
 ```
 
-This also installs its three dependencies, each at `^1.0.0`:
+This also installs its four dependencies, each at `^1.0.0`:
 
 | Dependency | Provides | Used for |
 | :- | :- | :- |
 | `engineering-paved-path` | skills `react-best-practices`, `next-best-practices`, `fastify-best-practices`, `architecture`, `react-testing-library`, `security`, `typescript-expert`, `zod`, `mermaid-diagram` | every plan step names one; `implementation-planner` preloads `architecture`; `spec-creator` uses `mermaid-diagram` and `security` |
 | `research-tools` | agent `researcher` | research requests during the spec rounds |
-| `architecture-review` | agent `architecture-reviewer` | the review gate in `run-plan` |
+| `architecture-review` | agent `architecture-reviewer` | the plan check in `review-plan` and the architecture review in `run-plan` |
+| `security-review` | agent `security-reviewer` | the security review in `run-plan` (every source-code diff) and, when the plan names untrusted input, auth, external I/O or secrets, in `review-plan` |
 
 Check the install with `claude plugin details sdd-engineering@dev-digest-ai-marketplace`:
-it should list four agents and three skills.
+it should list four agents and four skills.
 
 ## What's inside
 
 | Component | Invocation | Purpose |
 | :- | :- | :- |
 | skill `spec` | `/sdd-engineering:spec <requirements>` | Entry point for writing, revising or approving a spec: runs `spec-creator` rounds, fans out researchers, relays questions, sets `approved` only on your word |
-| skill `run-plan` | `/sdd-engineering:run-plan plan:<path>` | Runs an approved plan: implementers by the plan's DAG → reviewer ‖ verifier → bounded fix cycle → short report |
+| skill `review-plan` | `/sdd-engineering:review-plan plan:<path>` | Read-only plan check before implementation: plan-time architecture review (plus security review when the plan names untrusted input, auth, external I/O or secrets), a ≤ 15-line verdict. Never edits the plan |
+| skill `run-plan` | `/sdd-engineering:run-plan plan:<path>` | Runs an approved plan: implementers by the plan's DAG → architecture reviewer ‖ security reviewer ‖ verifier → bounded fix cycle → short report |
 | skill `workflow-retro` | `/sdd-engineering:workflow-retro` (manual only) | Retrospective of a multi-agent run from the session transcripts, with recommendations |
 | agent `spec-creator` | `subagent_type: "sdd-engineering:spec-creator"` (launched by the `spec` skill) | Writes the spec: EARS ACs, edge cases, contracts, diagrams; never plans or codes. `opus` |
 | agent `implementation-planner` | `@agent-sdd-engineering:implementation-planner` or `subagent_type: "sdd-engineering:implementation-planner"` | Two passes: requirements review + execution-mode question, then the plan file. Never edits the spec. `opus` |
 | agent `implementer` | `subagent_type: "sdd-engineering:implementer"` (launched by `run-plan`) | Executes plan phases, writes tests per AC, runs the plan's checks, reports. `sonnet` |
 | agent `plan-verifier` | `subagent_type: "sdd-engineering:plan-verifier"` (launched by `run-plan`) | Read-only: every AC Met / Not met / Unverifiable with evidence; re-runs the plan's commands. `sonnet` |
 
-Agents from the dependencies are launched as `research-tools:researcher` and
-`architecture-review:architecture-reviewer`. The skills always pass the full
+Agents from the dependencies are launched as `research-tools:researcher`,
+`architecture-review:architecture-reviewer` and `security-review:security-reviewer`. The skills always pass the full
 namespaced `subagent_type`, because other plugins can ship agents with the same
 short name.
 
@@ -122,6 +130,21 @@ The main session continues the same planner (`SendMessage`), which writes
 `docs/plans/2026-10-26-export-report-csv.md` and a ≤ 40-line summary. Read the
 plan file and approve it (or ask for "revise the plan").
 
+### 2b. Check the plan (optional, recommended)
+
+```text
+/sdd-engineering:review-plan plan:docs/plans/2026-10-26-export-report-csv.md
+```
+
+The chain is **plan → review-plan → owner approves → run-plan**. The skill runs
+`architecture-review:architecture-reviewer` in plan-time mode on the plan (and
+`security-review:security-reviewer` too when the spec or plan names untrusted
+input, auth, external I/O or secrets), then gives you a verdict of at most 15
+lines and the findings. It is read-only and **never edits the plan or the spec**:
+a defect goes back to `implementation-planner` through you, and you run
+`review-plan` again. `run-plan` reminds you of this step when the plan header
+shows no review.
+
 ### 3. Implement, review, verify
 
 Start a fresh chat (the plan file is the whole hand-off):
@@ -130,10 +153,14 @@ Start a fresh chat (the plan file is the whole hand-off):
 /sdd-engineering:run-plan plan:docs/plans/2026-10-26-export-report-csv.md max-fix:2
 ```
 
-You get a ≤ 15-line report: lanes run, the verifier's and reviewer's verdicts,
-fix rounds used and why the loop stopped, open items (unfixed CRITICAL, Not met
-or Unverifiable ACs), and WARNINGs and SUGGESTIONs for you to decide. Nothing is
-committed or pushed.
+The review step launches the architecture reviewer, the security reviewer and
+the verifier in one parallel message. The security reviewer is skipped only for
+docs- or config-only diffs, or when you put `security:skip` in the `run-plan`
+free text. You get a ≤ 15-line report: lanes run, the verifier's and both
+reviewers' verdicts, fix rounds used and why the loop stopped, open items
+(unfixed CRITICAL, Not met or Unverifiable ACs), and WARNINGs and SUGGESTIONs
+for you to decide. If the `pr-gate` plugin is installed, the report suggests its
+`pr-self-review` skill as the next check. Nothing is committed or pushed.
 
 ### 4. Retro (optional)
 
@@ -153,6 +180,7 @@ you a 3–5-line summary.
 | Spec blocking questions | Answer them (or accept the recommendations) | No spec file is written |
 | Spec approval | Say "set status approved" | The planner only reviews a `draft` spec; it does not plan it |
 | Plan pass 1 | Reply with `## Owner answers` including `Execution mode:` | The planner stays in pass 1 |
+| Plan check | Run `/sdd-engineering:review-plan` and read the verdict (optional) | Defects in the plan reach the code and cost more to fix |
 | Plan approval | Approve the plan file (or say go when `run-plan` asks) | `run-plan` asks before flipping a `draft` plan to `approved` |
 | Live paid calls | Put "owner approves live-smoke spend" in the `run-plan` free text | Implementers skip paid live checks and report them as not run |
 | After `run-plan` | Review the diff, decide on leftover WARNINGs, run your PR gate | Nothing is committed, pushed or opened as a PR |
@@ -171,7 +199,7 @@ The planner always asks; you decide, and `run-plan` can override with
   starts only after the lanes it waits on pass their checkpoint. Best for
   non-trivial work spanning several modules.
 
-Either way, review and verification run after all lanes, in parallel, and fixes
+Either way, architecture review, security review and verification run after all lanes, in parallel, and fixes
 go back to the **same** agents through `SendMessage` (they keep their context;
 re-reviews look only at changed files and open findings).
 
@@ -203,15 +231,15 @@ never search or touch (vendored copies, worktrees). The planner turns these into
 
 - **Claude Code** with plugin dependency support. Models: `spec-creator` and
   `implementation-planner` run on `opus` (judgement-heavy, manual steps);
-  `implementer` and `plan-verifier` run on `sonnet`. The optional security pass
-  in `run-plan` is a `general-purpose` agent pinned to `sonnet`.
+  `implementer` and `plan-verifier` run on `sonnet`. `security-reviewer` (from
+  `security-review`) and `architecture-reviewer` run on `sonnet`.
 - **`python3` 3.9+** on `PATH` for `/sdd-engineering:workflow-retro` (stdlib
   only). The skill pre-approves only its own `collect.py` command.
 - **Tools and write scope.** `spec-creator` writes only spec files and has no
   shell. `implementation-planner` writes only the plan file; its shell is
   read-only by instruction. `implementer` writes code and runs commands; no web.
   `plan-verifier` cannot write or edit (harness-enforced) and runs only reads
-  and the plan's commands. Instruction-level limits on agents that hold `Bash`
+  and the plan's commands. The two reviewers have no `Write`, `Edit` or `Bash`. Instruction-level limits on agents that hold `Bash`
   are not a sandbox; use `permissions.deny` in your settings for hard
   guarantees.
 - **Cost.** A full run launches several agents; a resumed agent re-sends its
@@ -230,7 +258,7 @@ never search or touch (vendored copies, worktrees). The planner turns these into
 
 | Symptom | Cause | Fix |
 | :- | :- | :- |
-| `Agent type 'research-tools:researcher' not found` (or `architecture-review:architecture-reviewer`) | A dependency plugin is missing or disabled | Reinstall `sdd-engineering` from the marketplace (it pulls dependencies), or install/enable the named plugin; check with `claude plugin list` |
+| `Agent type 'research-tools:researcher' not found` (or `architecture-review:architecture-reviewer`, `security-review:security-reviewer`) | A dependency plugin is missing or disabled | Reinstall `sdd-engineering` from the marketplace (it pulls dependencies), or install/enable the named plugin; check with `claude plugin list` |
 | `Agent type 'implementer' not found` or the wrong agent runs | Launched by short name | Always use the namespaced type, e.g. `sdd-engineering:implementer`; the skills already do |
 | Planner starts without the architecture rules, or `Unknown skill: engineering-paved-path:...` | `engineering-paved-path` is missing or disabled | Install or enable `engineering-paved-path` from the same marketplace |
 | `/sdd-engineering:spec` is not recognised | Plugin not enabled in this session, or the short `/spec` form was used | Enable the plugin and use the namespaced command |
@@ -243,12 +271,12 @@ never search or touch (vendored copies, worktrees). The planner turns these into
 
 `evals/` holds a cheap namespace smoke suite in the
 [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals.md) format:
-five cases, one run each, no judge graders.
+six cases, one run each, no judge graders.
 
 | Case | Checks |
 | :- | :- |
-| `skill-spec-resolves`, `skill-run-plan-resolves`, `skill-workflow-retro-resolves` | Typing `/sdd-engineering:<skill>` loads the skill (the reply echoes its first heading; no "unknown command") |
-| `agents-resolve` | `sdd-engineering:spec-creator`, `sdd-engineering:implementation-planner`, `sdd-engineering:implementer`, `sdd-engineering:plan-verifier`, `research-tools:researcher`, `architecture-review:architecture-reviewer` launch without `Agent type '…' not found` |
+| `skill-spec-resolves`, `skill-review-plan-resolves`, `skill-run-plan-resolves`, `skill-workflow-retro-resolves` | Typing `/sdd-engineering:<skill>` loads the skill (the reply echoes its first heading; no "unknown command") |
+| `agents-resolve` | `sdd-engineering:spec-creator`, `sdd-engineering:implementation-planner`, `sdd-engineering:implementer`, `sdd-engineering:plan-verifier`, `research-tools:researcher`, `architecture-review:architecture-reviewer`, `security-review:security-reviewer` launch without `Agent type '…' not found` |
 | `paved-path-architecture-resolves` | `engineering-paved-path:architecture` loads with the Skill tool |
 
 Run from the marketplace root (each run is a real model call on your account):
@@ -258,7 +286,7 @@ claude plugin eval plugins/sdd-engineering --ablation none --threshold 1.0 --no-
 ```
 
 Notes and limits:
-- Each case lists the three dependency folders in `plugins:` (relative paths to
+- Each case lists the four dependency folders in `plugins:` (relative paths to
   sibling plugins in this marketplace), because an eval run loads only the
   plugins it is given. To test the installed copy instead, run
   `claude plugin eval sdd-engineering@dev-digest-ai-marketplace --ablation none`.
@@ -268,17 +296,19 @@ Notes and limits:
   it from a successful load or launch plus the absence of the "not found" /
   "unknown" error in the transcript. The slash-command cases assume the eval
   harness expands a user-typed `/plugin:skill` in the prompt; if it does not,
-  the model-invocable `spec` and `run-plan` cases may still pass via the Skill
+  the model-invocable `spec`, `review-plan` and `run-plan` cases may still pass via the Skill
   tool, while `workflow-retro` (manual only) will fail and should be checked
   by hand.
-- `agents-resolve` briefly runs six subagents (two on `opus`) with a one-line
+- `agents-resolve` briefly runs seven subagents (two on `opus`) with a one-line
   task; it is the most expensive case.
 - `results/` is git-ignored.
 
 ## Related plugins
 
-- Depends on: `engineering-paved-path`, `research-tools`, `architecture-review`
-  (all `^1.0.0`).
+- Depends on: `engineering-paved-path`, `research-tools`, `architecture-review`,
+  `security-review` (all `^1.0.0`).
+- Works with, no dependency: `pr-gate` (`pr-self-review`), suggested in the
+  `run-plan` report when installed.
 - Used by: none yet. Other plugins can reuse the agents by their namespaced
   names.
 
