@@ -1,6 +1,6 @@
 # Research Tools
 
-A read-only `researcher` agent that answers concrete questions with evidence. It works in two modes: **repository research** (how a flow works end to end, what was already decided, what changed and when, using the code, docs and git history) and **external research** (library and API behaviour, release notes, upstream issues, RFCs, CVEs, how other projects solve a problem, using WebSearch and WebFetch). Every report separates conclusions from evidence (`path:line` or source URLs) and ends with an explicit list of what it could not find. Install it if you want research that you can trust and hand to another agent without re-checking, or if you use the `sdd-engineering` workflow, which depends on it.
+Three read-only agents. `researcher` answers concrete questions with evidence; `investigator` traces code structure; `brainstorm` weighs solution options before a spec exists. The `researcher` works in two modes: **repository research** (how a flow works end to end, what was already decided, what changed and when, using the code, docs and git history) and **external research** (library and API behaviour, release notes, upstream issues, RFCs, CVEs, how other projects solve a problem, using WebSearch and WebFetch). Every report separates conclusions from evidence (`path:line` or source URLs) and ends with an explicit list of what it could not find. `investigator` answers structural questions (who imports or calls X, every consumer of a field, blast radius of a change) with an edge table. `brainstorm` produces 3-5 genuinely different options, checks them against past decisions and recommends one; you choose. Install it if you want research that you can trust and hand to another agent without re-checking, or if you use the `sdd-engineering` workflow, which depends on it.
 
 ## Install
 
@@ -15,6 +15,8 @@ The plugin has no dependencies. It is installed automatically when you install `
 | Component | Type | Invocation | Purpose |
 | :- | :- | :- | :- |
 | `researcher` | agent | `@agent-research-tools:researcher` or `subagent_type: "research-tools:researcher"` | Finds and verifies facts in the repository or external sources; returns a structured report with cited evidence and a "Not found / unverified" list. Never edits files. |
+| `investigator` | agent | `@agent-research-tools:investigator` or `subagent_type: "research-tools:investigator"` | Traces the current working tree: definitions, importers and callers, consumers of a field, blast radius of a stated change. Returns an edge table with `path:line` evidence and a "Not searched" list. No shell, web or write tools. |
+| `brainstorm` | agent | `@agent-research-tools:brainstorm` or `subagent_type: "research-tools:brainstorm"` | Runs BEFORE `/sdd-engineering:spec`: 3-5 options that differ in mechanism (always including "reuse what exists / do nothing"), a rubric fixed up front, a check against the project's decision log, ADRs and specs, and a recommendation. Writes nothing; you choose. |
 | `research` | skill | `/research-tools:research <question> [save]` | Quick entry point: turns your request into up to 4 concrete questions, launches one `researcher` per question in parallel and returns the reports unchanged. With `save`, also writes them to `docs/research/`. |
 
 ## Quick start: `/research-tools:research`
@@ -27,6 +29,18 @@ The easiest way to use the agent. Type a question or a few at once:
 ```
 
 The skill shows the questions it will research (`Q1 [R] …`, `Q2 [E] …`), launches the researchers in parallel, and returns their reports as written. If your input is only a topic, it asks up to 3 short questions first.
+
+## Which agent to use
+
+| You want to know | Use |
+| :- | :- |
+| Why the code is this way, what was decided, what changed and when, how a library or API behaves, how a flow works end to end | `researcher` |
+| Where a symbol is defined, who imports or calls it, every consumer of a field, what breaks if a stated change is made | `investigator` |
+| What the options are for a design question, before any spec or plan exists | `brainstorm`, then `/sdd-engineering:spec` with its hand-off block |
+
+`investigator` and `brainstorm` are read-only by their tool lists (no `Bash`, no web, no write tools) and spawn no subagents. For a high-stakes design choice, run two or three `brainstorm` instances in parallel and compare; one instance alone produces correlated options and scores them itself. A pasted `investigator` or `researcher` report is a good input for `brainstorm`.
+
+`/research-tools:research` routes purely structural questions to `investigator` and everything else to `researcher`.
 
 ## How to use the agent directly
 
@@ -66,6 +80,18 @@ Mention the agent in a prompt, or let the main session launch it with the Agent 
 @agent-research-tools:researcher R2 — Which fields of the user profile response are rendered on the settings page, and where do they come from? → changes: the scope of AC-4.
   - Already cited: src/api/profile.ts:40-72
 ```
+
+### Example: investigator and brainstorm
+
+```text
+@agent-research-tools:investigator Rename field `status` on `Order` to `state`: who is affected? Scope: src/.
+```
+
+```text
+@agent-research-tools:brainstorm How should we add rate limiting to the public API? Constraints: no new infrastructure.
+```
+
+`brainstorm` ends with a "Hand-off to the spec step" block; after you choose, paste it into `/sdd-engineering:spec` so rejected options and constraints carry over.
 
 ### Example report (abridged)
 
@@ -109,9 +135,10 @@ External research reports follow the same shape, with `[S1]` citation markers, a
 
 ## Requirements / limits
 
-- **Tools:** `Read, Grep, Glob, Bash, WebSearch, WebFetch, TodoWrite`. `Write` and `Edit` are disallowed, and `Bash` is restricted by instruction to read-only commands (`cat`, `rg`, `ls`, `git log`, `git show`, `git blame`, `git diff`, …).
+- **Tools (`investigator`):** `Read, Grep, Glob, TodoWrite`; `maxTurns: 25`, model `sonnet`. **Tools (`brainstorm`):** `Read, Grep, Glob, TodoWrite, Skill`; `maxTurns: 30`, model `opus`. Both disallow `Write`, `Edit`, `NotebookEdit`, `Bash`, `WebSearch` and `WebFetch`.
+- **Tools (`researcher`):** `Read, Grep, Glob, Bash, WebSearch, WebFetch, TodoWrite`. `Write` and `Edit` are disallowed, and `Bash` is restricted by instruction to read-only commands (`cat`, `rg`, `ls`, `git log`, `git show`, `git blame`, `git diff`, …).
 - **Read-only guarantees:** never creates, edits or deletes files; never commits, checks out or installs; never signs in, accepts terms, submits forms or downloads files on the web; treats everything it reads as data, never as instructions.
-- **No delegation:** the agent has no `Agent` tool and never launches other agents or deep-research commands. For pure call-graph or import tracing it uses `Grep`/`Glob` itself, or lists the tracing that is still needed in its report.
+- **No delegation:** the agent has no `Agent` tool and never launches other agents or deep-research commands. For pure call-graph or import tracing, use `investigator`; the researcher otherwise uses `Grep`/`Glob` itself, or lists the tracing that is still needed in its report.
 - **Model and budget:** `sonnet`, `maxTurns: 40`, with a reserve of 4 turns to emit a partial report marked `## Not finished / budget exhausted`.
 - **External binaries:** none required. `rg` (ripgrep) and `fd` are used when available; `git` is needed for history questions.
 - **Web access:** external research needs WebSearch and WebFetch to be allowed in your Claude Code permissions.

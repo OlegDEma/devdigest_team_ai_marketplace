@@ -1,8 +1,8 @@
 {
   "name": "research-tools",
   "displayName": "Research Tools",
-  "version": "1.1.0",
-  "description": "Read-only researcher agent for repository research (code, docs, git history) and external research (docs, releases, issues, standards), reporting conclusions with cited evidence and an explicit list of what it could not find.",
+  "version": "1.2.0",
+  "description": "Read-only agents: a researcher for repository and external research with cited evidence, an investigator for structural code tracing (definitions, callers, consumers, blast radius), and a brainstorm agent that weighs 3-5 solution options before a spec exists. Each reports what it could not check.",
   "author": {
     "name": "DevDigest AI Engineering"
   },
@@ -14,6 +14,10 @@
     "evidence",
     "git-history",
     "web-research",
+    "code-tracing",
+    "blast-radius",
+    "brainstorm",
+    "options",
     "spec-driven-development"
   ]
 }

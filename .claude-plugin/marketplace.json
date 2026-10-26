@@ -22,9 +22,9 @@
     {
       "name": "research-tools",
       "source": "./plugins/research-tools",
-      "description": "Read-only researcher agent for repository and external research with cited evidence",
+      "description": "Read-only research agents: researcher (repo and external), investigator (structural code tracing) and brainstorm (options before a spec)",
       "category": "research",
-      "tags": ["research", "agent"]
+      "tags": ["research", "agent", "investigation", "brainstorm"]
     },
     {
       "name": "sdd-engineering",
