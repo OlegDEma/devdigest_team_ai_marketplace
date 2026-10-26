@@ -4,6 +4,12 @@ All notable changes to this plugin are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-27
+
+### Changed
+
+- `run-plan` skips `architecture-review:architecture-reviewer` for a small single-layer diff (single lane, ≤ 3 source files plus tests, one layer in §6, no layering risk in §10) and says so in its report; the security reviewer is never skipped by this rule. Measured on the csv-export fixture: mean cost per successful workflow $0.7299 → $0.6010 (−17.7%); see `docs/COST-BASELINE.md`.
+
 ## [1.1.0] - 2026-10-26
 
 ### Added
