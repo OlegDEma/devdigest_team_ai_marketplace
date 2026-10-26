@@ -4,5 +4,34 @@
   "owner": {
     "name": "Oleh Demskyi"
   },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "architecture-review",
+      "source": "./plugins/architecture-review",
+      "description": "Read-only architecture review of a plan, a working tree or a file list, with quoted evidence",
+      "category": "engineering",
+      "tags": ["architecture", "review", "agent"]
+    },
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "Shared engineering skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Mermaid",
+      "category": "engineering",
+      "tags": ["skills", "react", "nextjs", "fastify", "architecture", "security", "testing"]
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "Read-only researcher agent for repository and external research with cited evidence",
+      "category": "research",
+      "tags": ["research", "agent"]
+    },
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec-driven development workflow: spec, plan, implement, review, verify and retro with dedicated agents",
+      "category": "engineering",
+      "tags": ["sdd", "spec", "planning", "workflow", "agents"]
+    }
+  ]
 }
