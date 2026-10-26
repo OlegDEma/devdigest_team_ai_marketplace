@@ -4,6 +4,13 @@ All notable changes to this plugin are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-26
+
+### Added
+
+- `drizzle-orm-patterns` skill: Drizzle ORM schema definition, relations, queries, joins and aggregations, transactions, Drizzle Kit migrations, and common patterns (soft delete, upsert, batching, full-text search, audit trails), with worked examples.
+- `postgresql-table-design` skill: PostgreSQL schema design rules covering data types, constraints, indexing, JSONB, partitioning, upsert-friendly design, safe schema evolution and common gotchas.
+
 ## [1.0.0] - 2026-10-26
 
 ### Added
