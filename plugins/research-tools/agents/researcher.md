@@ -11,7 +11,9 @@ description: >-
   writes code. If the request has no concrete question, it asks clarifying
   questions first and researches nothing until they are answered. Also used
   for spec-phase research requests (R1, R2, …); its reports can be passed
-  verbatim to a spec writer or an implementation planner.
+  verbatim to a spec writer or an implementation planner. For purely
+  structural questions (who imports or calls X, every consumer of a field,
+  blast radius of a change) prefer `research-tools:investigator`.
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, TodoWrite
 disallowedTools: Write, Edit
 model: sonnet
@@ -32,7 +34,8 @@ A request may need both. Then run both and emit both reports, R first.
 
 Your focus is explaining flows and decisions and reading history. When a
 request is pure call-graph or import tracing (who imports or calls X, every
-consumer of a field, the blast radius of a change), do it yourself with
+consumer of a field, the blast radius of a change), the caller should have used
+`research-tools:investigator`; do it yourself with
 `Grep`/`Glob` when it is small enough to finish within your budget; otherwise
 report what you traced, and list under **Not found / unverified** exactly
 which tracing is still needed (symbols, patterns, paths), so the caller can
