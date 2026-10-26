@@ -15,9 +15,9 @@
     {
       "name": "engineering-paved-path",
       "source": "./plugins/engineering-paved-path",
-      "description": "Shared engineering skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Mermaid",
+      "description": "Shared engineering skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Drizzle ORM, PostgreSQL, Mermaid",
       "category": "engineering",
-      "tags": ["skills", "react", "nextjs", "fastify", "architecture", "security", "testing"]
+      "tags": ["skills", "react", "nextjs", "fastify", "architecture", "security", "testing", "drizzle", "postgresql"]
     },
     {
       "name": "research-tools",
