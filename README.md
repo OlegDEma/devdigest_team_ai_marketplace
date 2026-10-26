@@ -13,6 +13,8 @@ Private Claude Code plugin marketplace for the DevDigest team. We use it to dist
 │       ├── .claude-plugin/plugin.json
 │       ├── skills/ agents/ commands/ hooks/
 │       └── README.md
+├── catalog/                 # standalone catalog site (static, deployed to GitHub Pages)
+│   └── index.html
 ├── docs/
 │   ├── PLUGIN-GUIDELINES.md # plugin structure, manifest, dependencies
 │   ├── SECURITY.md          # permissions, secrets, script review
