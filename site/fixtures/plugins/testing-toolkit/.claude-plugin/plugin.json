@@ -1,0 +1,12 @@
+{
+  "name": "testing-toolkit",
+  "displayName": "Testing Toolkit",
+  "version": "0.4.2",
+  "description": "Generates unit and e2e tests, finds uncovered branches, analyzes CI failures",
+  "author": {
+    "name": "DevDigest Team"
+  },
+  "license": "UNLICENSED",
+  "keywords": [],
+  "dependencies": []
+}

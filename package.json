@@ -1,0 +1,22 @@
+{
+  "name": "dev-digest-ai-marketplace-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "catalog": "node scripts/build-catalog.mjs",
+    "dev": "npm run catalog && vite site",
+    "dev:fixtures": "node scripts/build-catalog.mjs --root site/fixtures && vite site",
+    "build": "npm run catalog && vite build site",
+    "preview": "vite preview site",
+    "test": "node --test \"scripts/test/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

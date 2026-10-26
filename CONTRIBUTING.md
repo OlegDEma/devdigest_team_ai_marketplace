@@ -29,6 +29,7 @@ All materials in this repository — docs, plugin manifests, skill/agent/command
    ```
 
    Run every skill/command at least once in a real session.
+   To see how the plugin looks in the catalog, run `npm install && npm run dev` and open http://localhost:5173.
 5. Add a row to the "Plugin catalog" table in [README.md](README.md).
 6. Open a PR and fill in the checklist below. After merge, the `<plugin-name>--v<version>` tag is created automatically.
 

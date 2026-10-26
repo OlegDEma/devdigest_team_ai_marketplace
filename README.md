@@ -13,8 +13,9 @@ Private Claude Code plugin marketplace for the DevDigest team. We use it to dist
 │       ├── .claude-plugin/plugin.json
 │       ├── skills/ agents/ commands/ hooks/
 │       └── README.md
-├── catalog/                 # standalone catalog site (static, deployed to GitHub Pages)
-│   └── index.html
+├── site/                    # catalog site: React + Vite app, built and deployed to GitHub Pages by CI
+│   ├── src/ fixtures/       # app source; fixture marketplace for dev and tests
+│   └── vite.config.js
 ├── docs/
 │   ├── PLUGIN-GUIDELINES.md # plugin structure, manifest, dependencies
 │   ├── SECURITY.md          # permissions, secrets, script review
@@ -25,6 +26,7 @@ Private Claude Code plugin marketplace for the DevDigest team. We use it to dist
 │       └── MARKETPLACE-RESEARCH.md  # research: official rules and practices
 ├── scripts/
 │   ├── validate-marketplace.mjs  # custom structural linter (Node, no dependencies)
+│   ├── build-catalog.mjs         # repository → catalog.json + feed.xml for the site
 │   ├── release.mjs               # bump version + date CHANGELOG for a release
 │   ├── tag-releases.mjs          # create missing <plugin>--v<version> tags (CI)
 │   ├── rollback.mjs              # roll back to an older tag as a new PATCH
@@ -34,10 +36,24 @@ Private Claude Code plugin marketplace for the DevDigest team. We use it to dist
 ├── .github/
 │   ├── workflows/validate.yml    # CI on pull_request
 │   ├── workflows/release-tags.yml  # tags releases after merge to main
+│   ├── workflows/pages.yml       # builds the catalog site and deploys it to GitHub Pages
 │   └── pull_request_template.md  # contributor checklist
+├── package.json             # site tooling: npm run dev / build / test
 ├── CODEOWNERS
 └── CONTRIBUTING.md
 ```
+
+## Catalog site
+
+The catalog at `https://olegdema.github.io/devdigest_team_ai_marketplace/` is generated from `marketplace.json` and `plugins/`, so it only ever shows real plugins. To work on it locally:
+
+```bash
+npm install
+npm run dev           # real data from this repository, http://localhost:5173
+npm run dev:fixtures  # same, with sample plugins from site/fixtures
+```
+
+Spec: [docs/CATALOG-SITE.md](docs/CATALOG-SITE.md).
 
 ## Installation
 

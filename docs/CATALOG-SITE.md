@@ -13,7 +13,8 @@ Design brief and mockup data: [design/CATALOG-DESIGN-BRIEF.md](design/CATALOG-DE
 - **No external requests at runtime.** Fonts, libraries and data are served from the same github.io origin. No analytics, cookies, CDNs or third-party widgets.
 - **Only metadata is published** (option 1). The site is public, so the bodies of `SKILL.md`, agents, commands, scripts and hooks never reach it. The "Source" link points to the private repository and only opens for team members.
 - **Allowlist, not denylist.** The build script copies only explicitly listed fields into `catalog.json` (see [Data model](#data-model)). A new field appears on the site only after this spec is changed.
-- **No runtime dependencies.** The build uses Node built-in modules only, like `validate-marketplace.mjs`. The frontend is vanilla JS (ES modules) without a bundler. The only library, MiniSearch, is vendored into the repository at a pinned version.
+- **React + Vite, built in CI.** The frontend is a React 18 single-page app bundled by Vite; GitHub Actions builds it on every deploy (see [Technology decision](#technology-decision)). React ships inside the bundle, nothing is loaded from a CDN. The data script `build-catalog.mjs` stays dependency-free (Node built-ins only), like `validate-marketplace.mjs`.
+- **Only real data.** The site shows only plugins and artifacts that exist in the repository. There is no sample data in the app; fixtures live in `site/fixtures/` and are used only by tests and `npm run dev:fixtures`.
 
 ## Features
 
@@ -38,7 +39,7 @@ Deliberately **out of scope**: reviews and ratings, install counters, showing ar
 
 ### F1. Search
 
-**Index.** MiniSearch builds the index in the browser from `catalog.json` on page load. The catalog is sized for hundreds of documents, so a prebuilt index is unnecessary. Every plugin and every artifact is an index document. The index and the UI are in English.
+**Index.** An in-house keyword provider (`site/src/search.js`, no library) builds the index in the browser from `catalog.json` on page load, with typo tolerance (edit distance 1), prefix matching and the field weights below. The catalog is sized for hundreds of documents, so a prebuilt index is unnecessary. Every plugin and every artifact is an index document. The index and the UI are in English.
 
 | Field | Weight |
 | :- | :- |
@@ -53,10 +54,10 @@ Settings: `prefix: true`, `fuzzy: 0.2`, `combineWith: "AND"`. If there are 0 res
 
 **Query parsing:**
 1. Type words become a filter and are removed from the query: `skill*` → skill; `agent*` → agent; `command*` → command; `hook*` → hook; `mcp` → mcp; `plugin*` → plugin. Ukrainian forms such as `скіл*` and `агент*` map the same way.
-2. Stopwords (`site/data/stopwords.json`: English plus a few common Ukrainian words; "i", "need", "for", "a", "the"…) are removed.
-3. Each remaining word is expanded with synonyms from `site/data/synonyms.json` (e.g. `"review": ["code-review", "pr"]`, `"tests": ["test", "testing"]`). Synonyms are ORed within a group; groups are ANDed together.
+2. Stopwords (list in `site/src/search.js`: English plus a few common Ukrainian words; "i", "need", "for", "a", "the"…) are removed.
+3. Each remaining word is expanded with synonyms from the synonym table in `site/src/search.js` (e.g. `"review": ["code-review", "pr"]`, `"tests": ["test", "testing"]`). Synonyms are ORed within a group; groups are ANDed together.
 
-The team is Ukrainian-speaking, so `synonyms.json` also has a small Ukrainian→English section (e.g. `"рев'ю": ["review", "code-review"]`). A query like "скіл для рев'ю" then resolves to the same English index terms.
+The team is Ukrainian-speaking, so the synonym table also has a small Ukrainian→English section (e.g. `"рев'ю": ["review", "code-review"]`). A query like "скіл для рев'ю" then resolves to the same English index terms.
 
 **Result card:** type icon, name (`displayName` or `name`), description with highlighted matches, plugin and version badges, tags, and a "Copy install" button (F4). Clicking the card opens F3.
 
@@ -178,7 +179,7 @@ If a plugin has no hooks, MCP or scripts, a "No executable code" badge is shown.
 
 ### F11. Role bundles *(stage 2)*
 
-- Source: `catalog/bundles.json` in the repository: `id`, `title`, `description`, `plugins[]`, `owner`. Ownership is set in `CODEOWNERS`.
+- Source: `site/bundles.json` in the repository: `id`, `title`, `description`, `plugins[]`, `owner`. Ownership is set in `CODEOWNERS`.
 - The `#/bundles` page shows bundle cards. A "Use bundle" button fills F10.
 - The build script fails if a bundle references a missing plugin.
 
@@ -190,37 +191,61 @@ If a plugin has no hooks, MCP or scripts, a "No executable code" badge is shown.
 ## Architecture
 
 ```text
+package.json                 # scripts: dev, dev:fixtures, build, test
 scripts/
-├── build-catalog.mjs        # Node built-ins: reads the repository → site/dist/
-└── validate-marketplace.mjs # unchanged, runs before the build
+├── build-catalog.mjs        # Node built-ins: repository → site/public/catalog.json + feed.xml
+├── lib/safety.mjs           # hidden-Unicode and secret checks shared with the validator
+└── validate-marketplace.mjs # runs before the build
 site/
-├── index.html
-├── app.js                   # router (hash), rendering, state
-├── search.js                # SearchProvider interface + keyword provider (MiniSearch)
-├── views/                   # home, plugin, artifact, start, new, stack, bundles…
-├── styles.css               # tokens, light/dark theme
-├── vendor/minisearch-<ver>.js
-├── data/                    # stopwords.json, synonyms.json
-└── fixtures/                # test marketplace while plugins/ is empty
-catalog/
-└── bundles.json             # stage 2
+├── index.html               # Vite entry
+├── vite.config.js           # relative base, so it works under /<repo>/
+├── src/
+│   ├── main.jsx             # loads catalog.json, shows loading / error states
+│   ├── App.jsx              # routing (hash), state, view models
+│   ├── Template.jsx         # presentational markup
+│   ├── search.js            # query parsing, synonyms, keyword provider
+│   ├── catalog.js, util.js, constants.js, sprite.js
+│   └── styles.css           # tokens, light/dark theme
+├── public/                  # generated catalog.json and feed.xml (git-ignored)
+├── fixtures/                # test marketplace: 6 plugins incl. an external one
+└── dist/                    # build output (git-ignored), deployed to Pages
 .github/workflows/pages.yml
 ```
 
 **`build-catalog.mjs`:**
-1. Reads `.claude-plugin/marketplace.json`. For each plugin with a local `source`, reads `plugin.json` and walks `skills/*/SKILL.md`, `agents/*.md`, `commands/*.md`, `hooks/hooks.json`, `.mcp.json`, `scripts/` and `CHANGELOG.md`.
-2. Parses **only the frontmatter** (`name`, `description`) of markdown files. The body is never read.
+1. Reads `.claude-plugin/marketplace.json`. For each plugin with a local `source`, reads `plugin.json` and walks `skills/*/SKILL.md`, `agents/*.md`, `commands/**/*.md`, `hooks/hooks.json`, `.mcp.json`, `scripts/` and `CHANGELOG.md`.
+2. Parses **only the frontmatter** (`name`, `description`) of markdown files; the body is never read. Descriptions are cleaned for display: `<example>` blocks and escaped newlines are dropped and the text is cut at 400 characters.
 3. Plugins with a remote `source` (`github`, `git-subdir`) enter the catalog with metadata from their `marketplace.json` entry and an "external" flag, without contents.
-4. Writes `site/dist/catalog.json`, `site/dist/feed.xml` and copies the static files.
-5. Flags: `--root <dir>` (default `.`), `--out <dir>`, `--repo owner/name` (default `$GITHUB_REPOSITORY`).
-6. Exits with code 1 if any published string field contains hidden Unicode characters or looks like a secret. It uses the same regexes as the validator; shared code moves to `scripts/lib/`.
+4. Writes `catalog.json` and `feed.xml` into `site/public/`; Vite copies them into `site/dist/`.
+5. Flags: `--root <dir>` (default `.`), `--out <dir>`, `--repo owner/name` (default `$GITHUB_REPOSITORY`, then the `origin` remote).
+6. Exits with code 1 if any published string contains hidden Unicode characters or looks like a secret (`scripts/lib/safety.mjs`).
+7. Hook artifacts are described from allowlisted fields only (event, matcher, script file name); the command string is never published.
 
-**`pages.yml`:** runs on push to `main` and via `workflow_dispatch`. Steps: `checkout` (`fetch-depth: 0`) → `setup-node` 22 → `validate-marketplace.mjs` → `build-catalog.mjs` → `actions/upload-pages-artifact` → `actions/deploy-pages`. Permissions: `pages: write`, `id-token: write`, `contents: read`.
+**`pages.yml`:** runs on push to `main` and via `workflow_dispatch`. Steps: `checkout` (`fetch-depth: 0`) → `setup-node` 22 → `validate-marketplace.mjs` → `npm ci` → `npm run build` (generates the data, then bundles the app) → `actions/upload-pages-artifact` (`site/dist`) → `actions/deploy-pages`. Permissions: `pages: write`, `id-token: write`, `contents: read`. `validate.yml` runs the same build on every PR, so a broken site never reaches `main`.
 
 **Local development:**
 ```bash
-node scripts/build-catalog.mjs --root site/fixtures --out site/dist && npx serve site/dist
+npm install
+npm run dev            # real data from this repository, hot reload at http://localhost:5173
+npm run dev:fixtures   # the same server on site/fixtures (6 sample plugins)
+npm run build          # production build into site/dist
+npm run preview        # serve site/dist
 ```
+`npm run dev` regenerates `catalog.json` on start; after changing a plugin, restart it or run `npm run catalog`.
+
+## Technology decision
+
+React 18 + Vite, built by GitHub Actions on every merge to `main`.
+
+| Pros | Cons |
+| :- | :- |
+| Components, JSX and tooling (tests, linters, TypeScript later) instead of one large file | Adds `package.json`, `node_modules` and dependency updates to a repository that had none |
+| Dependencies are bundled: no CDN, which keeps "no external requests at runtime" true | The deploy workflow now needs `npm ci` and a build step that can fail |
+| Dev server with hot reload comes with Vite | React is heavier than the problem strictly needs (about 66 KB gzip for the whole app) |
+| Stage 2 features (graph, stack builder, wizard) are easier to build and test | The app was ported from a Claude Design prototype, so parts of `App.jsx` are still a class component and can be modernised later |
+| The PR build catches site breakage before merge | |
+
+The earlier plan (vanilla JS, no bundler, vendored MiniSearch) is superseded by this decision.
 
 ## Data model
 
@@ -275,19 +300,19 @@ Any field outside this schema is not published.
 - Mobile widths from 360 px with no horizontal scroll.
 - The interface language is English. Claude Code terms (skill, agent, hook) are used as-is.
 - `localStorage` is used only for the theme, the onboarding banner and the stack; every call is wrapped in `try/catch`. The site works fully without it.
-- **Graceful degradation:** `build-catalog.mjs` also renders a plain plugin list (name, description, install command) into `index.html` inside `<noscript>`, so the catalog is usable without JavaScript. If `catalog.json` fails to load, the page shows an error with "Try again" instead of a blank screen. A browser without `navigator.clipboard` falls back to selecting the command text.
+- **Graceful degradation:** `index.html` has a `<noscript>` note that points to `catalog.json`, so the data stays reachable without JavaScript. If `catalog.json` fails to load, the page shows an error with "Try again" instead of a blank screen. A browser without `navigator.clipboard` falls back to selecting the command text.
 
 ## Future: semantic search
 
 Not implemented in v1; this only fixes the extension point so it can be added without a rewrite or a server.
 
-- `search.js` exposes a `SearchProvider` interface: `init(catalog)`, `search(query, filters) → [{ id, score, matches }]`. v1 ships `KeywordProvider` (MiniSearch + synonyms) and all UI code talks to the interface only.
+- `search.js` exposes a `SearchProvider` interface: `init(catalog)`, `search(query, filters) → [{ id, score, matches }]`. v1 ships the keyword provider (prefix, typo tolerance and synonyms) and all UI code talks to the interface only.
 - A later `SemanticProvider` could use embeddings precomputed in CI into `embeddings.json` (one vector per document) and a small self-hosted model run in the browser (e.g. transformers.js) to embed the query, then mix the score with the keyword score. Everything stays static files on the same origin.
 - Trigger to revisit: users regularly get empty or irrelevant results for descriptive queries ("something to help with DB migrations"), visible in "Suggest a skill" issues.
 
 ## Testing
 
-- Unit tests for `build-catalog.mjs` and `search.js` on `node:test`, no dependencies: frontmatter and CHANGELOG parsing, allowlist (the `command` field from hooks never reaches the output), query parsing, synonyms.
+- Unit tests for `build-catalog.mjs` (`scripts/test/build-catalog.test.mjs`) on `node:test`, no dependencies: frontmatter and CHANGELOG parsing, allowlist (the `command` field from hooks never reaches the output), unsafe strings, empty marketplace. Tests for `search.js` come with the search provider extraction.
 - Fixtures in `site/fixtures/`: 5–10 plugins of varied makeup, including an external one and one without a CHANGELOG, plus an empty marketplace (`plugins: []`).
 - Tests run in `validate.yml` on every PR. `pages.yml` only deploys.
 
@@ -297,7 +322,7 @@ Not implemented in v1; this only fixes the extension point so it can be added wi
 - `scripts/validate-marketplace.mjs`: CHANGELOG format check and version match with `plugin.json` (done).
 - `README.md`: link to the site.
 - `CONTRIBUTING.md`: item "check how the plugin looks in the catalog (local development)".
-- `CODEOWNERS`: `/site/` and `/catalog/`.
+- `CODEOWNERS`: `/site/` and `/scripts/build-catalog.mjs`.
 
 ## Prerequisites and open questions
 
