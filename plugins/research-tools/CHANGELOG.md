@@ -4,6 +4,12 @@ All notable changes to this plugin are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-26
+
+### Added
+
+- `/research-tools:research` skill: quick entry point that turns a request into up to 4 concrete questions, picks the mode (repository, external or both), launches one `researcher` per question in parallel, returns the reports unchanged and, with `save`, writes them to `docs/research/`.
+
 ## [1.0.0] - 2026-10-26
 
 ### Added

@@ -1,9 +1,19 @@
 {
   "name": "research-tools",
   "displayName": "Research Tools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Read-only researcher agent for repository research (code, docs, git history) and external research (docs, releases, issues, standards), reporting conclusions with cited evidence and an explicit list of what it could not find.",
-  "author": { "name": "DevDigest AI Engineering" },
+  "author": {
+    "name": "DevDigest AI Engineering"
+  },
   "license": "UNLICENSED",
-  "keywords": ["research", "agent", "read-only", "evidence", "git-history", "web-research", "spec-driven-development"]
+  "keywords": [
+    "research",
+    "agent",
+    "read-only",
+    "evidence",
+    "git-history",
+    "web-research",
+    "spec-driven-development"
+  ]
 }
