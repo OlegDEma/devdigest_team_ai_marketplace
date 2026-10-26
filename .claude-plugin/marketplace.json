@@ -32,6 +32,13 @@
       "description": "Spec-driven development workflow: spec, plan, implement, review, verify and retro with dedicated agents",
       "category": "engineering",
       "tags": ["sdd", "spec", "planning", "workflow", "agents"]
+    },
+    {
+      "name": "security-review",
+      "source": "./plugins/security-review",
+      "description": "Read-only security review of a plan, a working tree or a file list, with quoted evidence and self-verified CRITICALs",
+      "category": "security",
+      "tags": ["security", "review", "agent"]
     }
   ]
 }

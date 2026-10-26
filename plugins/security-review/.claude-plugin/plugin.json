@@ -1,0 +1,10 @@
+{
+  "name": "security-review",
+  "displayName": "Security Review",
+  "version": "1.0.0",
+  "description": "Read-only security reviewer that gives a verdict with quoted evidence on a plan, a working tree or a file list; every CRITICAL is adversarially self-verified before it is reported",
+  "author": { "name": "DevDigest AI Engineering" },
+  "license": "UNLICENSED",
+  "keywords": ["security", "review", "owasp", "authz", "injection", "secrets", "agent", "read-only"],
+  "dependencies": [{ "name": "engineering-paved-path", "version": "^1.0.0" }]
+}
