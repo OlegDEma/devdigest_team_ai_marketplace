@@ -4,6 +4,13 @@ All notable changes to this plugin are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-26
+
+### Changed
+
+- The planner and implementer skill routing tables now include `engineering-paved-path:drizzle-orm-patterns` and `engineering-paved-path:postgresql-table-design`, so data steps no longer fall back to `none`.
+- Requires `engineering-paved-path` `^1.1.0`.
+
 ## [1.1.0] - 2026-10-26
 
 ### Added
