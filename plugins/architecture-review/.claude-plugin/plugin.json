@@ -1,0 +1,10 @@
+{
+  "name": "architecture-review",
+  "displayName": "Architecture Review",
+  "version": "1.0.0",
+  "description": "Read-only architecture reviewer that gives a verdict with quoted evidence on a plan, a working tree or a file list, against the project's own layer map",
+  "author": { "name": "DevDigest AI Engineering" },
+  "license": "UNLICENSED",
+  "keywords": ["architecture", "review", "layering", "hexagonal", "onion", "agent", "read-only"],
+  "dependencies": [{ "name": "engineering-paved-path", "version": "^1.0.0" }]
+}

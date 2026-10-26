@@ -1,0 +1,14 @@
+{
+  "name": "sdd-engineering",
+  "displayName": "SDD Engineering",
+  "version": "1.0.0",
+  "description": "Spec-driven development workflow for Claude Code: spec, plan, implement, review, verify and retro with dedicated agents and orchestrating skills.",
+  "author": { "name": "DevDigest AI Engineering" },
+  "license": "UNLICENSED",
+  "keywords": ["sdd", "spec-driven-development", "specification", "planning", "implementation", "verification", "multi-agent", "ears", "retrospective"],
+  "dependencies": [
+    { "name": "engineering-paved-path", "version": "^1.0.0" },
+    { "name": "research-tools", "version": "^1.0.0" },
+    { "name": "architecture-review", "version": "^1.0.0" }
+  ]
+}
