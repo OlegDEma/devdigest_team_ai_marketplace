@@ -6,7 +6,7 @@
   "scripts": {
     "catalog": "node scripts/build-catalog.mjs",
     "dev": "npm run catalog && vite site",
-    "dev:fixtures": "node scripts/build-catalog.mjs --root site/fixtures && vite site",
+    "dev:fixtures": "node scripts/build-catalog.mjs --root site/fixtures && vite site --mode fixtures",
     "build": "npm run catalog && vite build site",
     "preview": "vite preview site",
     "test": "node --test \"scripts/test/*.test.mjs\""

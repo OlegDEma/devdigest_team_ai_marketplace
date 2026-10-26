@@ -233,6 +233,21 @@ npm run preview        # serve site/dist
 ```
 `npm run dev` regenerates `catalog.json` on start; after changing a plugin, restart it or run `npm run catalog`.
 
+## Indexing and reindexing
+
+GitHub Pages serves static files only, so the browser cannot read `plugins/` at runtime. Indexing is a **build-time snapshot**: `build-catalog.mjs` walks the repository and writes `catalog.json`; the browser loads that one file and runs search and facets in memory. Nobody reindexes by hand.
+
+| When | What happens |
+| :- | :- |
+| Push to `main` (any change) | `pages.yml`: lint, build the data, bundle the app, deploy. The site updates itself in 1–2 minutes. |
+| Pull request | `validate.yml` builds the site without deploying, so a broken plugin cannot be merged. |
+| Local `npm run dev` | Builds the data on start and **watches** `plugins/` and `marketplace.json`: any change regenerates `catalog.json` and reloads the page. |
+| On demand | `npm run catalog` locally, or "Run workflow" on `pages.yml` in the Actions tab (`workflow_dispatch`). |
+
+**Why not read the repository at runtime.** A browser could call the GitHub API instead (no reindexing, always fresh), but: 60 requests per hour per IP without a token, dozens of requests to walk the tree, slow, no offline use, fuzzy search still needs the whole corpus in memory, and for a private repository it fails without a token, which must never be put into public static files. A prebuilt static index is one fetch, has no limits and costs only an automatic CI rebuild.
+
+**Where the build runs.** On a GitHub Actions runner (`ubuntu-latest`, Node 22), never on a user's machine. The built files are not committed (they are git-ignored); they exist only as the CI artifact and on Pages. The repository stays the single source of truth.
+
 ## Technology decision
 
 React 18 + Vite, built by GitHub Actions on every merge to `main`.

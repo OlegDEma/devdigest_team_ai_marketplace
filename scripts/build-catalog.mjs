@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // Builds the data for the catalog site from the repository: reads
 // .claude-plugin/marketplace.json and plugins/, writes catalog.json and
 // feed.xml. Only an allowlist of metadata is published; file bodies and hook
@@ -345,20 +344,25 @@ function parseFlags(argv) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main(run);
 
-function run() {
-  const here = fileURLToPath(new URL(".", import.meta.url));
-  const flags = parseFlags(process.argv.slice(2));
-  const root = resolve(flags.root ?? ".");
-  const out = resolve(flags.out ?? join(here, "..", "site", "public"));
-  const repo = detectRepo(root, flags.repo);
-
+/** Builds the catalog and writes catalog.json + feed.xml into `out`. */
+export function writeCatalog({ root, out, repo }) {
   const catalog = buildCatalog(root, repo);
   assertSafe(catalog);
-
   const [owner, name] = repo.split("/");
   const siteUrl = `https://${owner.toLowerCase()}.github.io/${name}/`;
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
   writeFileSync(join(out, "feed.xml"), buildFeed(catalog, siteUrl));
+  return catalog;
+}
+
+export { detectRepo };
+
+function run() {
+  const here = fileURLToPath(new URL(".", import.meta.url));
+  const flags = parseFlags(process.argv.slice(2));
+  const root = resolve(flags.root ?? ".");
+  const out = resolve(flags.out ?? join(here, "..", "site", "public"));
+  const catalog = writeCatalog({ root, out, repo: detectRepo(root, flags.repo) });
   console.log(`Catalog built: ${catalog.plugins.length} plugin(s), ${catalog.artifacts.length} artifact(s) → ${basename(out)}/`);
 }
