@@ -1,0 +1,19 @@
+{
+  "name": "pr-gate",
+  "displayName": "PR Gate",
+  "version": "1.0.0",
+  "description": "Local pre-PR merge gate: collects the branch diff plus the working tree, runs the project's own checks, routes slices to review skills, verifies every CRITICAL adversarially and writes a freshness stamp. Report-only by default, opt-in blocking mode.",
+  "author": {
+    "name": "DevDigest AI Engineering"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "review",
+    "pr",
+    "gate",
+    "quality",
+    "workflow",
+    "pre-merge"
+  ],
+  "dependencies": []
+}

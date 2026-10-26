@@ -94,6 +94,7 @@ claude plugin update <plugin-name>@dev-digest-ai-marketplace
 | [`architecture-review`](plugins/architecture-review/) | Read-only architecture review of a plan, a working tree or a file list, with quoted evidence | `engineering-paved-path` | 1.0.0 |
 | [`engineering-insights`](plugins/engineering-insights/) | `engineering-insights` skill (record and recall learnings in `INSIGHTS.md`) and read-only `insight-curator` agent | — | 1.0.0 |
 | [`engineering-paved-path`](plugins/engineering-paved-path/) | Shared skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Mermaid | — | 1.0.0 |
+| [`pr-gate`](plugins/pr-gate/) | Local pre-PR merge gate: `/pr-gate:review` runs project checks, routed reviews and verified CRITICALs; report-only by default | — (optional: `engineering-paved-path`, `architecture-review`) | 1.0.0 |
 | [`research-tools`](plugins/research-tools/) | Read-only `researcher`, `investigator` (structural tracing) and `brainstorm` (options before a spec) agents, plus the `/research-tools:research` skill | — | 1.2.0 |
 | [`sdd-engineering`](plugins/sdd-engineering/) | Spec-driven development: spec → plan → implement → review → verify → retro | all three above | 1.0.0 |
 | [`test-and-docs`](plugins/test-and-docs/) | `test-writer` (pins a behavior or bug with a test it runs) and `doc-writer` (documents an implemented feature with a Mermaid diagram) | `engineering-paved-path` | 1.0.0 |
