@@ -1,0 +1,18 @@
+{
+  "name": "engineering-insights",
+  "displayName": "Engineering Insights",
+  "version": "1.0.0",
+  "description": "Compounding project memory: an engineering-insights skill that records non-obvious learnings into the touched module's INSIGHTS.md and recalls them before work, plus a read-only insight-curator agent that audits all INSIGHTS.md files.",
+  "author": {
+    "name": "DevDigest AI Engineering"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "insights",
+    "knowledge",
+    "memory",
+    "wrap-up",
+    "agent",
+    "skill"
+  ]
+}

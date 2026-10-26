@@ -92,6 +92,7 @@ claude plugin update <plugin-name>@dev-digest-ai-marketplace
 | Plugin | Description | Depends on | Version |
 | :- | :- | :- | :- |
 | [`architecture-review`](plugins/architecture-review/) | Read-only architecture review of a plan, a working tree or a file list, with quoted evidence | `engineering-paved-path` | 1.0.0 |
+| [`engineering-insights`](plugins/engineering-insights/) | `engineering-insights` skill (record and recall learnings in `INSIGHTS.md`) and read-only `insight-curator` agent | — | 1.0.0 |
 | [`engineering-paved-path`](plugins/engineering-paved-path/) | Shared skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Mermaid | — | 1.0.0 |
 | [`research-tools`](plugins/research-tools/) | Read-only `researcher`, `investigator` (structural tracing) and `brainstorm` (options before a spec) agents, plus the `/research-tools:research` skill | — | 1.2.0 |
 | [`sdd-engineering`](plugins/sdd-engineering/) | Spec-driven development: spec → plan → implement → review → verify → retro | all three above | 1.0.0 |

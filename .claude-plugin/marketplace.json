@@ -13,6 +13,13 @@
       "tags": ["architecture", "review", "agent"]
     },
     {
+      "name": "engineering-insights",
+      "source": "./plugins/engineering-insights",
+      "description": "Record and recall non-obvious learnings in INSIGHTS.md, with a read-only curator agent that audits them",
+      "category": "engineering",
+      "tags": ["insights", "knowledge", "agent", "skill"]
+    },
+    {
       "name": "engineering-paved-path",
       "source": "./plugins/engineering-paved-path",
       "description": "Shared engineering skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Drizzle ORM, PostgreSQL, Mermaid",
