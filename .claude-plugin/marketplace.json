@@ -32,6 +32,13 @@
       "description": "Spec-driven development workflow: spec, plan, implement, review, verify and retro with dedicated agents",
       "category": "engineering",
       "tags": ["sdd", "spec", "planning", "workflow", "agents"]
+    },
+    {
+      "name": "test-and-docs",
+      "source": "./plugins/test-and-docs",
+      "description": "test-writer pins a behavior or bug with a test it runs; doc-writer documents an implemented feature with a Mermaid diagram",
+      "category": "engineering",
+      "tags": ["testing", "docs", "agent"]
     }
   ]
 }

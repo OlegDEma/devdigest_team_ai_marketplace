@@ -1,0 +1,12 @@
+{
+  "name": "test-and-docs",
+  "displayName": "Test and Docs",
+  "version": "1.0.0",
+  "description": "Two agents for after the code exists: test-writer pins one stated behavior, edge case or bug with a test that it runs; doc-writer documents an implemented feature with a Mermaid diagram and files it where the project keeps its docs.",
+  "author": { "name": "DevDigest AI Engineering" },
+  "license": "UNLICENSED",
+  "keywords": ["testing", "tests", "documentation", "docs", "mermaid", "agent", "regression", "diataxis"],
+  "dependencies": [
+    { "name": "engineering-paved-path", "version": "^1.0.0" }
+  ]
+}

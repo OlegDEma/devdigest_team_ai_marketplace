@@ -95,6 +95,7 @@ claude plugin update <plugin-name>@dev-digest-ai-marketplace
 | [`engineering-paved-path`](plugins/engineering-paved-path/) | Shared skills: React, Next.js, Fastify, architecture, testing, security, TypeScript, Zod, Mermaid | — | 1.0.0 |
 | [`research-tools`](plugins/research-tools/) | Read-only `researcher` agent and `/research-tools:research` skill for repository and external research | — | 1.1.0 |
 | [`sdd-engineering`](plugins/sdd-engineering/) | Spec-driven development: spec → plan → implement → review → verify → retro | all three above | 1.0.0 |
+| [`test-and-docs`](plugins/test-and-docs/) | `test-writer` (pins a behavior or bug with a test it runs) and `doc-writer` (documents an implemented feature with a Mermaid diagram) | `engineering-paved-path` | 1.0.0 |
 
 Start with `sdd-engineering`: installing it pulls in the other three. How they fit together: [docs/DEPENDENCY-GRAPH.md](docs/DEPENDENCY-GRAPH.md).
 
