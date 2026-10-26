@@ -9,6 +9,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve, relative } from "node:path";
 import { CYRILLIC_RE, latestRelease, parseChangelog } from "./lib/release-utils.mjs";
+import { HIDDEN_UNICODE_RE } from "./lib/safety.mjs";
 
 const root = resolve(process.argv[2] ?? ".");
 const errors = [];
@@ -21,8 +22,6 @@ const KEBAB_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const SEMVER_RE = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/;
 const SHA1_RE = /^[0-9a-f]{40}$/;
 const SHA256_RE = /^[0-9a-fA-F]{64}$/;
-// Bidi controls and zero-width characters that can hide content from reviewers.
-const HIDDEN_UNICODE_RE = /[​-‏‪-‮⁠-⁤⁦-⁩﻿]/;
 
 const RESERVED_MARKETPLACE_NAMES = new Set([
   "claude-code-marketplace", "claude-code-plugins", "claude-plugins-official",

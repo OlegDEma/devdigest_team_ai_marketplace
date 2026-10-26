@@ -1,0 +1,17 @@
+{
+  "name": "react-tools",
+  "displayName": "React Tools",
+  "version": "2.3.0",
+  "description": "React component tooling: audits, scaffolding and formatting on save",
+  "author": {
+    "name": "Frontend Guild"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "components",
+    "prettier"
+  ],
+  "dependencies": [
+    "core-conventions"
+  ]
+}

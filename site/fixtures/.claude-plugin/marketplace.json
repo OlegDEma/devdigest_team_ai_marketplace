@@ -1,0 +1,77 @@
+{
+  "name": "dev-digest-ai-marketplace",
+  "description": "Fixture marketplace used for local development and tests",
+  "owner": {
+    "name": "DevDigest Team"
+  },
+  "plugins": [
+    {
+      "name": "code-review",
+      "source": "./plugins/code-review",
+      "description": "Pull request review against team standards: security, tests, readability",
+      "category": "engineering",
+      "tags": [
+        "review",
+        "pr",
+        "quality"
+      ]
+    },
+    {
+      "name": "core-conventions",
+      "source": "./plugins/core-conventions",
+      "description": "Shared team conventions: commit style, branch names, repository structure",
+      "category": "core",
+      "tags": [
+        "conventions",
+        "git"
+      ]
+    },
+    {
+      "name": "jira-workflow",
+      "source": "./plugins/jira-workflow",
+      "description": "Work with Jira tickets from Claude Code: create them, update statuses, link them to branches",
+      "category": "productivity",
+      "tags": [
+        "jira",
+        "tasks",
+        "mcp"
+      ]
+    },
+    {
+      "name": "onboarding-helper",
+      "source": {
+        "source": "github",
+        "repo": "example-org/onboarding-helper",
+        "sha": "0123456789abcdef0123456789abcdef01234567"
+      },
+      "version": "1.0.3",
+      "description": "Helps new team members find their way around repositories and processes",
+      "category": "productivity",
+      "tags": [
+        "onboarding",
+        "docs"
+      ]
+    },
+    {
+      "name": "react-tools",
+      "source": "./plugins/react-tools",
+      "description": "React component tooling: audits, scaffolding and formatting on save",
+      "category": "frontend",
+      "tags": [
+        "react",
+        "frontend",
+        "refactoring"
+      ]
+    },
+    {
+      "name": "testing-toolkit",
+      "source": "./plugins/testing-toolkit",
+      "description": "Generates unit and e2e tests, finds uncovered branches, analyzes CI failures",
+      "category": "engineering",
+      "tags": [
+        "testing",
+        "ci"
+      ]
+    }
+  ]
+}

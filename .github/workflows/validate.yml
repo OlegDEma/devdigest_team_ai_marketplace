@@ -30,8 +30,13 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
         run: node scripts/check-version-bump.mjs "origin/$BASE_REF"
 
-      - name: Release script tests
+      - name: Release and catalog script tests
         run: node --test "scripts/test/*.test.mjs"
+
+      - name: Build catalog site
+        run: |
+          npm ci
+          npm run build
 
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code

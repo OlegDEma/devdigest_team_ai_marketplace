@@ -1,0 +1,17 @@
+{
+  "name": "code-review",
+  "displayName": "Code Review",
+  "version": "2.0.0",
+  "description": "Pull request review against team standards: security, tests, readability",
+  "author": {
+    "name": "Oleh Demskyi"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "code-review",
+    "pull-request"
+  ],
+  "dependencies": [
+    "core-conventions"
+  ]
+}

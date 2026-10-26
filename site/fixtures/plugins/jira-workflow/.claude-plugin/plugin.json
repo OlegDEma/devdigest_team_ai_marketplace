@@ -1,0 +1,17 @@
+{
+  "name": "jira-workflow",
+  "displayName": "Jira Workflow",
+  "version": "1.0.0",
+  "description": "Work with Jira tickets from Claude Code: create them, update statuses, link them to branches",
+  "author": {
+    "name": "DevDigest Team"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "jira",
+    "tickets"
+  ],
+  "dependencies": [
+    "core-conventions"
+  ]
+}

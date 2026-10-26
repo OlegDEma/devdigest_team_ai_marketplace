@@ -1,0 +1,15 @@
+{
+  "name": "core-conventions",
+  "displayName": "Core Conventions",
+  "version": "1.2.0",
+  "description": "Shared team conventions: commit style, branch names, repository structure",
+  "author": {
+    "name": "DevDigest Team"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "commits",
+    "branches"
+  ],
+  "dependencies": []
+}
