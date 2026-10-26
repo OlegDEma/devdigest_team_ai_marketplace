@@ -139,7 +139,7 @@ prefix plus every implementer manifest verbatim (cache-friendly):
 | `subagent_type` | Task | When |
 |---|---|---|
 | `sdd-engineering:plan-verifier` | every AC of the spec, every step; run the plan's §11 commands, including the full suite once | always |
-| `architecture-review:architecture-reviewer` | only the files in the manifests' diff stat + §10-sensitive files; it has no shell, so paste the diff stat and name the files | always, unless the diff touches no source code (docs or config only) |
+| `architecture-review:architecture-reviewer` | only the files in the manifests' diff stat + §10-sensitive files; it has no shell, so paste the diff stat and name the files | unless the diff touches no source code (docs or config only), or **all** of these hold: the plan runs a single lane, the manifest touches ≤ 3 source files plus their tests, §6 puts every file in one layer, and §10 names no layering or boundary risk. When skipped, say so in the report (*architecture review skipped: small single-layer diff*) so the owner can ask for it. The security reviewer is never skipped by this rule |
 | `security-review:security-reviewer` | the same files and diff stat as the architecture reviewer, plus §10 security-sensitive files; it has no shell, so paste the diff stat and name the files; ask it to re-check any SR-n ids from a plan-time verdict | always, unless the diff touches no source code (docs or config only) or the owner's free text contains `security:skip` |
 
 ### Step 3 — bounded fix cycle
