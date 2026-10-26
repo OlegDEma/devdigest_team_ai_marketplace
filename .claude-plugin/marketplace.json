@@ -46,6 +46,13 @@
       "description": "Read-only security review of a plan, a working tree or a file list, with quoted evidence and self-verified CRITICALs",
       "category": "security",
       "tags": ["security", "review", "agent"]
+    },
+    {
+      "name": "test-and-docs",
+      "source": "./plugins/test-and-docs",
+      "description": "test-writer pins a behavior or bug with a test it runs; doc-writer documents an implemented feature with a Mermaid diagram",
+      "category": "engineering",
+      "tags": ["testing", "docs", "agent"]
     }
   ]
 }
