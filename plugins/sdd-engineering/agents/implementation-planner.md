@@ -300,8 +300,10 @@ build files, a database migration — there is no data skill yet).
 | untrusted input, auth/authz, secrets, rendering user content, prompts built from external text | `engineering-paved-path:security` |
 | type-level work, generics, inference problems | `engineering-paved-path:typescript-expert` |
 | a runtime schema or contract at a boundary (request/response, config, external data) | `engineering-paved-path:zod` |
+| Drizzle ORM schema, queries, relations, transactions or migrations | `engineering-paved-path:drizzle-orm-patterns` |
+| PostgreSQL table, index, constraint or data-type design | `engineering-paved-path:postgresql-table-design` |
 | a diagram in docs | `engineering-paved-path:mermaid-diagram` |
-| anything else (config, build, CI, migrations, docs prose) | `none` |
+| anything else (config, build, CI, docs prose, migrations outside Drizzle) | `none` |
 
 A step that fits two rows names the one that constrains it most; mention the
 second in the step text if it matters. If the project uses a stack none of

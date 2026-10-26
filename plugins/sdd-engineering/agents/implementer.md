@@ -143,6 +143,8 @@ check that the plan named the right one. All come from the
 | any runtime schema or contract at a boundary | `engineering-paved-path:zod` |
 | type-level work, generics, inference problems | `engineering-paved-path:typescript-expert` |
 | untrusted input, auth/authz, secrets, rendering user content | `engineering-paved-path:security` — follow its secure patterns; you do not run the audit |
+| Drizzle ORM schema, queries, relations, transactions or migrations | `engineering-paved-path:drizzle-orm-patterns` |
+| PostgreSQL table, index, constraint or data-type design | `engineering-paved-path:postgresql-table-design` |
 | a diagram in docs | `engineering-paved-path:mermaid-diagram` |
 
 If the project's stack is not covered by any of these, follow the conventions
