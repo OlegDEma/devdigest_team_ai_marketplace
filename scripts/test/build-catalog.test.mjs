@@ -48,7 +48,9 @@ test("mcp servers, scripts and artifact ids", () => {
   assert.deepEqual(plugin("jira-workflow").components.scripts, ["load-current-ticket.sh"]);
   assert.ok(artifact("code-review/skill/pr-review"));
   assert.equal(artifact("code-review/skill/pr-review").description, "Full PR review against the team checklist: security, tests, readability, naming");
-  assert.ok(artifact("react-tools/hook/posttooluse-write-edit"));
+  assert.deepEqual(artifact("react-tools/hook/posttooluse-write-edit").hook, { event: "PostToolUse", matcher: "Write|Edit", script: "format-on-save.sh" });
+  assert.equal(artifact("react-tools/hook/posttooluse-write-edit").description, "");
+  assert.deepEqual(artifact("jira-workflow/mcp/jira").mcp, { transport: "http" });
 });
 
 test("external plugins keep metadata only", () => {
@@ -56,6 +58,12 @@ test("external plugins keep metadata only", () => {
   assert.equal(ext.external, true);
   assert.equal(ext.components, null);
   assert.equal(catalog.artifacts.filter((a) => a.plugin === "onboarding-helper").length, 0);
+});
+
+test("health issues carry a kind and params, never display text", () => {
+  const issue = catalog.stats.health.issues.find((i) => i.kind === "empty-description");
+  assert.deepEqual(issue, { plugin: "testing-toolkit", kind: "empty-description", params: { type: "skill", name: "ci-failure" } });
+  assert.ok(catalog.stats.health.issues.every((i) => !("message" in i)));
 });
 
 test("health issues are reported for incomplete plugins", () => {

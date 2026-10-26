@@ -221,7 +221,9 @@ site/
 6. Exits with code 1 if any published string contains hidden Unicode characters or looks like a secret (`scripts/lib/safety.mjs`).
 7. Hook artifacts are described from allowlisted fields only (event, matcher, script file name); the command string is never published.
 
-**`pages.yml`:** runs on push to `main` and via `workflow_dispatch`. Steps: `checkout` (`fetch-depth: 0`) → `setup-node` 22 → `validate-marketplace.mjs` → `npm ci` → `npm run build` (generates the data, then bundles the app) → `actions/upload-pages-artifact` (`site/dist`) → `actions/deploy-pages`. Permissions: `pages: write`, `id-token: write`, `contents: read`. `validate.yml` runs the same build on every PR, so a broken site never reaches `main`.
+**`pages.yml`** ("Deploy catalog to GitHub Pages"): runs on push to `main` and via `workflow_dispatch`, as two jobs. **Build catalog site**: `checkout` (`fetch-depth: 0`) → `setup-node` 22 → `validate-marketplace.mjs` → `npm ci` → `npm run build` → `upload-pages-artifact` (`site/dist`). **Deploy to GitHub Pages** (`needs: build`, the only job with `pages: write` and `id-token: write`): `deploy-pages`.
+
+**`site-build.yml`** ("Catalog site build"): runs on every pull request and push to `main`, as its own workflow with one job, **Build catalog site**: `npm ci` → catalog build and i18n tests → `npm run build` → the built site is attached as the `catalog-site` artifact for reviewers. It is separate from `validate.yml` ("Validate marketplace", which checks the plugin harness), so the Checks list shows at a glance whether the site build or the harness validation failed.
 
 **Local development:**
 ```bash
@@ -247,6 +249,17 @@ GitHub Pages serves static files only, so the browser cannot read `plugins/` at 
 **Why not read the repository at runtime.** A browser could call the GitHub API instead (no reindexing, always fresh), but: 60 requests per hour per IP without a token, dozens of requests to walk the tree, slow, no offline use, fuzzy search still needs the whole corpus in memory, and for a private repository it fails without a token, which must never be put into public static files. A prebuilt static index is one fetch, has no limits and costs only an automatic CI rebuild.
 
 **Where the build runs.** On a GitHub Actions runner (`ubuntu-latest`, Node 22), never on a user's machine. The built files are not committed (they are git-ignored); they exist only as the CI artifact and on Pages. The repository stays the single source of truth.
+
+## Translations
+
+All user-visible text is in one file, `site/src/messages.js` (English). Components never contain literal UI strings: they call `t('key', { vars })`, `plural('key', n)` or `rich('key')` from `site/src/i18n.jsx`.
+
+- `{name}` is a variable. `rich()` messages may contain `<b>`, `<i>`, `<code>`, `<kbd>`, `<mark>` and `<link>` (a component passed by the caller), so a sentence with inline markup is translated as one unit.
+- Plural forms use the suffixes `.one` and `.other`; month and weekday names are list-valued messages.
+- Data from the build is language-neutral: hook and MCP artifacts carry `hook` / `mcp` fields and health issues carry `kind` + `params`; the site composes the sentences. Only text written by plugin authors (descriptions, changelog entries) is shown as published.
+- To add a language: copy the `messages` object, translate the values, and select it in `i18n.jsx`. Adding a language switcher is a separate step.
+- `scripts/test/i18n.test.mjs` fails if code uses a missing key, if `Template.jsx` contains literal text, or if plural pairs are incomplete.
+- Not covered: the `<title>`, description and `<noscript>` text in `site/index.html`, and the heading of `feed.xml` (written by the build script), both English.
 
 ## Technology decision
 
@@ -306,6 +319,8 @@ The earlier plan (vanilla JS, no bundler, vendored MiniSearch) is superseded by 
 ```
 
 Any field outside this schema is not published.
+
+Two parts are structured instead of prose, so the site can word them in its own language: hook artifacts add `hook: { event, matcher, script }` and MCP artifacts add `mcp: { transport }` (their `description` is empty); `stats.health.issues` items are `{ plugin, kind, params? }`, for example `{ "plugin": "x", "kind": "stale", "params": { "days": 238 } }`.
 
 ## Non-functional requirements
 

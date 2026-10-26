@@ -1,0 +1,43 @@
+name: Catalog site build
+
+# Separate from "Validate marketplace": that workflow checks the plugin harness,
+# this one only answers "does the catalog site still build?".
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build catalog site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # CHANGELOG entries without a date fall back to the commit date.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Catalog build and i18n tests
+        run: node --test scripts/test/build-catalog.test.mjs scripts/test/i18n.test.mjs
+
+      - name: Build site
+        run: npm run build
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      # Lets reviewers download and open the built site from a PR.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catalog-site
+          path: site/dist
+          retention-days: 7

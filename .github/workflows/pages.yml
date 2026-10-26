@@ -7,19 +7,15 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
+    name: Build catalog site
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +34,7 @@ jobs:
 
       # Generates site/public/catalog.json + feed.xml from the repository,
       # then bundles the React app into site/dist.
-      - name: Build catalog site
+      - name: Build site
         run: npm run build
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -47,5 +43,17 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4

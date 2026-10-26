@@ -177,8 +177,8 @@ function buildLocalPlugin(entry, root) {
 
   const used = new Set();
   const artifacts = [];
-  const add = (type, name, description, file, slugBase = name) => {
-    artifacts.push({ id: `${entry.name}/${type}/${uniqueSlug(slugBase, used)}`, type, name, description, plugin: entry.name, path: posix(relative(root, file)) });
+  const add = (type, name, description, file, slugBase = name, extra = {}) => {
+    artifacts.push({ id: `${entry.name}/${type}/${uniqueSlug(slugBase, used)}`, type, name, description, plugin: entry.name, path: posix(relative(root, file)), ...extra });
   };
 
   const skillsDir = join(dir, "skills");
@@ -199,10 +199,10 @@ function buildLocalPlugin(entry, root) {
   const hooksFile = existsSync(join(dir, "hooks", "hooks.json")) ? join(dir, "hooks", "hooks.json") : manifestFile;
   for (const h of components.hooks) {
     const label = h.matcher ? `${h.event} · ${h.matcher}` : h.event;
-    const detail = `${h.script ? `Runs ${h.script}` : "Runs a hook"} on ${h.event}${h.matcher ? ` when the tool matches ${h.matcher}` : ""}.`;
-    add("hook", label, detail, hooksFile, label);
+    // No prose: the site composes the sentence from these fields in its own language.
+    add("hook", label, "", hooksFile, label, { hook: { event: h.event, matcher: h.matcher, script: h.script } });
   }
-  for (const s of components.mcpServers) add("mcp", s.name, `${s.name} MCP server (${s.transport})`, existsSync(join(dir, ".mcp.json")) ? join(dir, ".mcp.json") : manifestFile, s.name);
+  for (const s of components.mcpServers) add("mcp", s.name, "", existsSync(join(dir, ".mcp.json")) ? join(dir, ".mcp.json") : manifestFile, s.name, { mcp: { transport: s.transport } });
 
   return { plugin, artifacts };
 }
@@ -241,13 +241,14 @@ function computeStats(plugins, artifacts, generatedAt) {
   const pct = (pred) => (local.length ? Math.round((100 * local.filter(pred).length) / local.length) : 0);
   const issues = [];
   for (const p of local) {
-    if (!p.changelog.length) issues.push({ plugin: p.name, kind: "no-changelog", message: "No CHANGELOG.md" });
-    else if (p.changelog[0].version !== p.version) issues.push({ plugin: p.name, kind: "version-mismatch", message: `plugin.json is ${p.version}, newest CHANGELOG entry is ${p.changelog[0].version}` });
-    if (!p.hasReadme) issues.push({ plugin: p.name, kind: "no-readme", message: "No README.md" });
+    if (!p.changelog.length) issues.push({ plugin: p.name, kind: "no-changelog" });
+    else if (p.changelog[0].version !== p.version) issues.push({ plugin: p.name, kind: "version-mismatch", params: { version: p.version, latest: p.changelog[0].version } });
+    if (!p.hasReadme) issues.push({ plugin: p.name, kind: "no-readme" });
     const age = daysBetween(p.lastReleasedAt, generatedAt.slice(0, 10));
-    if (age > 180) issues.push({ plugin: p.name, kind: "stale", message: `No release for ${age} days` });
-    for (const a of artifacts.filter((x) => x.plugin === p.name && !x.description)) {
-      issues.push({ plugin: p.name, kind: "empty-description", message: `${a.type[0].toUpperCase()}${a.type.slice(1)} \`${a.name}\` has no description` });
+    if (age > 180) issues.push({ plugin: p.name, kind: "stale", params: { days: age } });
+    // Hooks and MCP servers carry structured data instead of prose, so they never count here.
+    for (const a of artifacts.filter((x) => x.plugin === p.name && !x.description && !x.hook && !x.mcp)) {
+      issues.push({ plugin: p.name, kind: "empty-description", params: { type: a.type, name: a.name } });
     }
   }
   const count = (t) => artifacts.filter((a) => a.type === t).length;
