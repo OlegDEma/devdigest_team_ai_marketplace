@@ -4,6 +4,20 @@ All notable changes to this plugin are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-26
+
+### Added
+
+- `review-plan` skill: `/sdd-engineering:review-plan plan:<path>` runs `architecture-review:architecture-reviewer` (and `security-review:security-reviewer` when the spec or plan names untrusted input, auth, external I/O or secrets) in plan-time mode on a plan, relays a verdict of at most 15 lines and the findings, and never edits the plan or the spec.
+- `run-plan` launches `security-review:security-reviewer` in the same parallel message as `plan-verifier` and `architecture-reviewer` whenever the diff touches source code; the owner can skip it with `security:skip`.
+- `run-plan` pre-flight suggests `review-plan` when the plan header shows no review, and the final report suggests the `pr-gate` plugin's `pr-self-review` skill when it is installed (no dependency).
+- Dependency on `security-review` `^1.0.0`.
+- Eval case `skill-review-plan-resolves`; `agents-resolve` now also launches `security-review:security-reviewer`, and every case loads the `security-review` plugin.
+
+### Changed
+
+- `run-plan` fix list and re-review delta include security `CRITICAL` and `WARNING` findings (`SR-n`); the same security reviewer re-checks its own ids. This replaces the conditional `general-purpose` security fallback.
+
 ## [1.0.0] - 2026-10-26
 
 ### Added

@@ -1,7 +1,7 @@
 ---
 description: The user-invoked skill /sdd-engineering:spec resolves under its namespace after install and its instructions load.
 tags: [namespace, smoke]
-plugins: ["../..", "../../../engineering-paved-path", "../../../research-tools", "../../../architecture-review"]
+plugins: ["../..", "../../../engineering-paved-path", "../../../research-tools", "../../../architecture-review", "../../../security-review"]
 runs: 1
 max_turns: 2
 timeout_seconds: 120
