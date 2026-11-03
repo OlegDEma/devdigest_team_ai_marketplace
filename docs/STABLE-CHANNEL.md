@@ -48,7 +48,14 @@ To fix `main` for everyone, do the release rollback from [RELEASES.md](RELEASES.
 A version is promoted only when all of these hold:
 
 1. Its tag exists (`<plugin>--v<version>`) and `claude plugin validate . --strict` passes on that commit.
-2. The plugin's eval suite is green: `claude plugin eval plugins/<name> --ablation none`, result recorded in the plugin's `RELEASES.md`.
+2. The plugin's eval suite is green. Run it from the `plugins/` folder: the cases load sibling plugins by relative path, and `claude plugin eval` only allows plugins under the folder it runs against, so `claude plugin eval plugins/<name>` rejects them.
+
+   ```bash
+   cd plugins
+   claude plugin eval . --eval-dir <name>/evals --ablation none --max-cost-usd 3 --no-publish --trust-plugin
+   ```
+
+   Record the result in the plugin's `RELEASES.md`.
 3. A real workflow ran on it end to end (for `sdd-engineering`: `/sdd-engineering:run-plan` on the fixture in [`cost/fixture`](cost/fixture) via `scripts/cost/run-workflow.sh`).
 4. `claude plugin list --json` shows the plugin and its dependencies enabled without errors after a clean install from the `stable` ref.
 
