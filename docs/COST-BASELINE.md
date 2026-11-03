@@ -84,6 +84,8 @@ If a later change fails any of these points, revert the rule.
 | :- | :- |
 | `plan-verifier` `effort: high` → `medium` together with reading the plan header, §8, §10, §11 in one Bash call instead of two (tried as one change on 1.0.0) | mean $0.551 vs $0.544: no saving (the verifier is ≈5% of the tokens, one orchestrator turn is a cache read) |
 
+Raw per-run results: [`evidence/cost/`](evidence/README.md).
+
 ## Reproduce
 
 ```bash

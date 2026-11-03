@@ -24,6 +24,8 @@ Suite of tag `sdd-engineering--v1.1.0`, run from `plugins/`:
 
 It proves that the skills and agents resolve under their namespaces after install and that the dependency plugins load. It does not run a real workflow; for that see [COST-BASELINE.md](COST-BASELINE.md).
 
+Eval reports (JSON and HTML): [`evidence/eval/`](evidence/README.md).
+
 ## Findings
 
 - `claude plugin eval plugins/sdd-engineering` fails for every case: sibling plugins in `plugins:` are outside the containment root. Running it from `plugins/` with `--eval-dir sdd-engineering/evals` works. `STABLE-CHANNEL.md` has the command.
