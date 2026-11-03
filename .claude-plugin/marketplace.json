@@ -1,6 +1,6 @@
 {
-  "name": "dev-digest-ai-marketplace",
-  "description": "Internal AI Harness marketplace for the DevDigest team: skills, agents, commands and hooks for Claude Code",
+  "name": "dev-digest-ai-marketplace-stable",
+  "description": "Stable channel of the DevDigest AI marketplace: only verified plugin versions, promoted by hand from main (see docs/STABLE-CHANNEL.md on main)",
   "owner": {
     "name": "Oleh Demskyi"
   },
