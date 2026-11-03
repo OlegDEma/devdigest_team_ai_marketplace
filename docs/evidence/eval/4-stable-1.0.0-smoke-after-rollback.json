@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.311",
+  "startedAt": "2026-11-03T18:43:19.365Z",
+  "durationSeconds": 24,
+  "costUsd": 0.6247446000000001,
+  "partial": false,
+  "suite": {
+    "root": "/private/tmp/claude-501/-Users-oleh-Work-devdigest-team-ai-marketplace/4ee4f4ab-0ce4-4488-a7fd-d5f906984d36/scratchpad/stable-wt/plugins",
+    "ablation": "none",
+    "threshold": 1,
+    "concurrency": 1,
+    "plugins": [
+      {
+        "name": "sdd-engineering",
+        "version": "1.0.0",
+        "path": "/private/tmp/claude-501/-Users-oleh-Work-devdigest-team-ai-marketplace/4ee4f4ab-0ce4-4488-a7fd-d5f906984d36/scratchpad/stable-wt/plugins/sdd-engineering"
+      },
+      {
+        "name": "engineering-paved-path",
+        "version": "1.0.0",
+        "path": "/private/tmp/claude-501/-Users-oleh-Work-devdigest-team-ai-marketplace/4ee4f4ab-0ce4-4488-a7fd-d5f906984d36/scratchpad/stable-wt/plugins/engineering-paved-path"
+      },
+      {
+        "name": "research-tools",
+        "version": "1.0.0",
+        "path": "/private/tmp/claude-501/-Users-oleh-Work-devdigest-team-ai-marketplace/4ee4f4ab-0ce4-4488-a7fd-d5f906984d36/scratchpad/stable-wt/plugins/research-tools"
+      },
+      {
+        "name": "architecture-review",
+        "version": "1.0.0",
+        "path": "/private/tmp/claude-501/-Users-oleh-Work-devdigest-team-ai-marketplace/4ee4f4ab-0ce4-4488-a7fd-d5f906984d36/scratchpad/stable-wt/plugins/architecture-review"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "agents-resolve",
+      "dir": "sdd-engineering/evals/agents-resolve",
+      "source": "prose",
+      "promptMarkdown": "Namespace smoke test. In ONE message, launch these six subagents in parallel with the Agent tool, using exactly these subagent_type values:\n\n- sdd-engineering:spec-creator\n- sdd-engineering:implementation-planner\n- sdd-engineering:implementer\n- sdd-engineering:plan-verifier\n- research-tools:researcher\n- architecture-review:architecture-reviewer\n\nGive every one of them this prompt, verbatim: \"Namespace smoke test. Do not use any tools and do not read any files. Reply with exactly one line: READY followed by your agent name.\"\n\nWhen all six have returned, reply with one line per subagent_type: \"<subagent_type>: resolved\" if the launch succeeded, or \"<subagent_type>: NOT FOUND\" if the Agent tool reported that the type does not exist. Do nothing else.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 600,
+      "maxTurns": 4,
+      "graders": [
+        {
+          "name": "launched-architecture-reviewer",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"architecture-review:architecture-reviewer\""
+          }
+        },
+        {
+          "name": "launched-implementation-planner",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:implementation-planner\""
+          }
+        },
+        {
+          "name": "launched-implementer",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:implementer\""
+          }
+        },
+        {
+          "name": "launched-plan-verifier",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:plan-verifier\""
+          }
+        },
+        {
+          "name": "launched-researcher",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"research-tools:researcher\""
+          }
+        },
+        {
+          "name": "launched-spec-creator",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:spec-creator\""
+          }
+        },
+        {
+          "name": "no-agent-not-found",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "Agent type '[^']+' not found",
+            "flags": "",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "none-reported-missing",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "NOT FOUND",
+            "flags": "",
+            "match": "not_contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 0.20314140000000003,
+            "judgeCostUsd": 0,
+            "durationSeconds": 12,
+            "startedAt": "2026-11-03T18:43:19.406Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-fm1MTf/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "launched-architecture-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementation-planner",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-plan-verifier",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-researcher",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-spec-creator",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-agent-not-found",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "none-reported-missing",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "paved-path-architecture-resolves",
+      "dir": "sdd-engineering/evals/paved-path-architecture-resolves",
+      "source": "prose",
+      "promptMarkdown": "Namespace smoke test. Load the skill engineering-paved-path:architecture with the Skill tool, using exactly that name. Then reply in one sentence that starts with \"Loaded engineering-paved-path:architecture\" and names one rule from it. Do not use any other tool.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 120,
+      "maxTurns": 3,
+      "graders": [
+        {
+          "name": "confirmed",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Loaded engineering-paved-path:architecture",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "no-unknown-skill",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "unknown (skill|command|slash command)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "skill-loaded",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Skill",
+            "input_match": "\"skill\"\\s*:\\s*\"engineering-paved-path:architecture\""
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.1134192,
+            "judgeCostUsd": 0,
+            "durationSeconds": 4,
+            "startedAt": "2026-11-03T18:43:31.515Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-ggERPv/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "confirmed",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Loaded engineering-paved-path:architecture",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-unknown-skill",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "skill-loaded",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Skill called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "skill-run-plan-resolves",
+      "dir": "sdd-engineering/evals/skill-run-plan-resolves",
+      "source": "prose",
+      "promptMarkdown": "/sdd-engineering:run-plan Namespace smoke test only. Do not start the workflow, do not launch any agent and do not read any plan. Reply with the exact text of the first Markdown heading of these skill instructions, without the leading # characters, and nothing else.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 120,
+      "maxTurns": 2,
+      "graders": [
+        {
+          "name": "heading-echoed",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "run-plan: run an approved plan",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "no-unknown-command",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "unknown (skill|command|slash command)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.1075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 3,
+            "startedAt": "2026-11-03T18:43:35.734Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-Gw1jjF/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "heading-echoed",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched run-plan: run an approved plan",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-unknown-command",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "skill-spec-resolves",
+      "dir": "sdd-engineering/evals/skill-spec-resolves",
+      "source": "prose",
+      "promptMarkdown": "/sdd-engineering:spec Namespace smoke test only. Do not start the workflow, do not launch any agent and do not ask any question. Reply with the exact text of the first Markdown heading of these skill instructions, without the leading # characters, and nothing else.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 120,
+      "maxTurns": 2,
+      "graders": [
+        {
+          "name": "heading-echoed",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "spec: run spec-creator from the main session",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "no-unknown-command",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "unknown (skill|command|slash command)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.101268,
+            "judgeCostUsd": 0,
+            "durationSeconds": 2,
+            "startedAt": "2026-11-03T18:43:38.256Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-re5sBo/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "heading-echoed",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched spec: run spec-creator from the main session",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-unknown-command",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    },
+    {
+      "name": "skill-workflow-retro-resolves",
+      "dir": "sdd-engineering/evals/skill-workflow-retro-resolves",
+      "source": "prose",
+      "promptMarkdown": "/sdd-engineering:workflow-retro Namespace smoke test only. Do not run any command or script and do not write any file. Reply with the exact text of the first Markdown heading of these skill instructions, without the leading # characters, and nothing else.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 120,
+      "maxTurns": 2,
+      "graders": [
+        {
+          "name": "heading-echoed",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "workflow-retro: evaluate how a multi-agent run went",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "no-unknown-command",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "unknown (skill|command|slash command)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.099416,
+            "judgeCostUsd": 0,
+            "durationSeconds": 2,
+            "startedAt": "2026-11-03T18:43:40.623Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-FusW8M/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "heading-echoed",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched workflow-retro: evaluate how a multi-agent run went",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-unknown-command",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 5,
+    "casesPassed": 5,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}
