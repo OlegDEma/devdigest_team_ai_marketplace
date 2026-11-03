@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.311",
+  "startedAt": "2026-11-03T18:42:07.692Z",
+  "durationSeconds": 42,
+  "costUsd": 0.8457475000000001,
+  "partial": false,
+  "suite": {
+    "root": "/Users/oleh/Work/devdigest_cost/plugins",
+    "ablation": "none",
+    "caseFilter": "agents-resolve",
+    "threshold": 1,
+    "concurrency": 1,
+    "plugins": [
+      {
+        "name": "sdd-engineering",
+        "version": "1.1.0",
+        "path": "/Users/oleh/Work/devdigest_cost/plugins/sdd-engineering"
+      },
+      {
+        "name": "engineering-paved-path",
+        "version": "1.0.0",
+        "path": "/Users/oleh/Work/devdigest_cost/plugins/engineering-paved-path"
+      },
+      {
+        "name": "research-tools",
+        "version": "1.1.0",
+        "path": "/Users/oleh/Work/devdigest_cost/plugins/research-tools"
+      },
+      {
+        "name": "architecture-review",
+        "version": "1.0.0",
+        "path": "/Users/oleh/Work/devdigest_cost/plugins/architecture-review"
+      },
+      {
+        "name": "security-review",
+        "version": "1.0.0",
+        "path": "/Users/oleh/Work/devdigest_cost/plugins/security-review"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "agents-resolve",
+      "dir": "sdd-engineering/evals/agents-resolve",
+      "source": "prose",
+      "promptMarkdown": "Namespace smoke test. In ONE message, launch these seven subagents in parallel with the Agent tool, using exactly these subagent_type values:\n\n- sdd-engineering:spec-creator\n- sdd-engineering:implementation-planner\n- sdd-engineering:implementer\n- sdd-engineering:plan-verifier\n- research-tools:researcher\n- architecture-review:architecture-reviewer\n- security-review:security-reviewer\n\nGive every one of them this prompt, verbatim: \"Namespace smoke test. Do not use any tools and do not read any files. Reply with exactly one line: READY followed by your agent name.\"\n\nWhen all seven have returned, reply with one line per subagent_type: \"<subagent_type>: resolved\" if the launch succeeded, or \"<subagent_type>: NOT FOUND\" if the Agent tool reported that the type does not exist. Do nothing else.",
+      "runsPerCase": 1,
+      "timeoutSeconds": 600,
+      "maxTurns": 4,
+      "graders": [
+        {
+          "name": "launched-architecture-reviewer",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"architecture-review:architecture-reviewer\""
+          }
+        },
+        {
+          "name": "launched-implementation-planner",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:implementation-planner\""
+          }
+        },
+        {
+          "name": "launched-implementer",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:implementer\""
+          }
+        },
+        {
+          "name": "launched-plan-verifier",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:plan-verifier\""
+          }
+        },
+        {
+          "name": "launched-researcher",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"research-tools:researcher\""
+          }
+        },
+        {
+          "name": "launched-security-reviewer",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"security-review:security-reviewer\""
+          }
+        },
+        {
+          "name": "launched-spec-creator",
+          "type": "tool_used",
+          "weight": 1,
+          "config": {
+            "tool": "Agent",
+            "input_match": "\"subagent_type\"\\s*:\\s*\"sdd-engineering:spec-creator\""
+          }
+        },
+        {
+          "name": "no-agent-not-found",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "trace",
+            "pattern": "Agent type '[^']+' not found",
+            "flags": "",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "none-reported-missing",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "NOT FOUND",
+            "flags": "",
+            "match": "not_contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 0.2790306000000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-11-03T18:42:07.734Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-OWs48P/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "launched-architecture-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementation-planner",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-plan-verifier",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-researcher",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-security-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-spec-creator",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-agent-not-found",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "none-reported-missing",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.28806210000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 16,
+            "startedAt": "2026-11-03T18:42:20.700Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-nqIqm1/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "launched-architecture-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementation-planner",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-plan-verifier",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-researcher",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-security-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-spec-creator",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-agent-not-found",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "none-reported-missing",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 0.27865480000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-11-03T18:42:36.898Z",
+            "error": null,
+            "tracePath": "/private/tmp/e-p91PSH/out/trace.jsonl",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "launched-architecture-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementation-planner",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-implementer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-plan-verifier",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-researcher",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-security-reviewer",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "launched-spec-creator",
+                "passed": true,
+                "weight": 1,
+                "explanation": "Agent called 1x (expected 1..∞)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "no-agent-not-found",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "none-reported-missing",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 1,
+    "casesPassed": 1,
+    "overallScore": 1,
+    "overallPassRate": 1
+  }
+}
