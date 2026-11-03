@@ -70,6 +70,8 @@ claude plugin marketplace add OlegDEma/devdigest_team_ai_marketplace
 claude plugin install <plugin-name>@dev-digest-ai-marketplace
 ```
 
+For verified versions only, use the stable channel instead (`#stable`, marketplace `dev-digest-ai-marketplace-stable`): [docs/STABLE-CHANNEL.md](docs/STABLE-CHANNEL.md).
+
 To make the marketplace available to everyone working in a specific project, run this in that project's root and commit `.claude/settings.json`:
 
 ```bash

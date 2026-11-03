@@ -74,13 +74,15 @@ One marketplace version serves one version of each plugin, so a rollback is a ne
 
    The plugin's `CHANGELOG.md` must have no unreleased entries; the folder must have no uncommitted changes.
 
-2. **Pinning a single user:** a user can add the marketplace at a specific ref:
+2. **Stable channel (no release needed):** a second marketplace, `dev-digest-ai-marketplace-stable`, serves only verified versions from the `stable` branch. Switching a machine back to it takes four commands: see [STABLE-CHANNEL.md](STABLE-CHANNEL.md).
+
+3. **Pinning a single user:** a user can add the marketplace at a specific ref:
 
    ```bash
    claude plugin marketplace add OlegDEma/devdigest_team_ai_marketplace#<tag-or-branch>
    ```
 
-3. **Removing a plugin entirely:** remove its entry from `plugins`, add `"<name>": null` to `renames`; if needed, set `"forceRemoveDeletedPlugins": true` so the plugin is removed from users' machines.
+4. **Removing a plugin entirely:** remove its entry from `plugins`, add `"<name>": null` to `renames`; if needed, set `"forceRemoveDeletedPlugins": true` so the plugin is removed from users' machines.
 
 ## Renaming
 
