@@ -58,7 +58,7 @@ This also installs its four dependencies, each at `^1.0.0`:
 
 | Dependency | Provides | Used for |
 | :- | :- | :- |
-| `engineering-paved-path` | skills `react-best-practices`, `next-best-practices`, `fastify-best-practices`, `architecture`, `react-testing-library`, `security`, `typescript-expert`, `zod`, `mermaid-diagram` | every plan step names one; `implementation-planner` preloads `architecture`; `spec-creator` uses `mermaid-diagram` and `security` |
+| `engineering-paved-path` | skills `react-best-practices`, `next-best-practices`, `fastify-best-practices`, `architecture`, `react-testing-library`, `security`, `typescript-expert`, `zod`, `drizzle-orm-patterns`, `postgresql-table-design`, `mermaid-diagram` | every plan step names one; `implementation-planner` preloads `architecture`; `spec-creator` uses `mermaid-diagram` and `security` |
 | `research-tools` | agent `researcher` | research requests during the spec rounds |
 | `architecture-review` | agent `architecture-reviewer` | the plan check in `review-plan` and the architecture review in `run-plan` |
 | `security-review` | agent `security-reviewer` | the security review in `run-plan` (every source-code diff) and, when the plan names untrusted input, auth, external I/O or secrets, in `review-plan` |
