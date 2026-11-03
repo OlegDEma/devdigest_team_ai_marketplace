@@ -22,7 +22,7 @@ How much one successful `sdd-engineering` workflow costs, what we changed to mak
 
 ## Baseline
 
-`sdd-engineering` 1.1.0 (current `main`, four agents per run).
+`sdd-engineering` 1.1.0 (four agents per run). Release 1.1.1 only adds two skill rows to the planner and implementer routing tables and was not re-measured; `run-plan` is identical.
 
 | Run | Agents | Cost, USD | Seconds | Successful |
 | :- | :-: | -: | -: | :-: |
